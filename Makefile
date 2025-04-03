@@ -1,0 +1,2 @@
+dependencies:
+	dotnet tool restore

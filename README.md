@@ -1,5 +1,7 @@
 # trade-imports-decision-comparer
 
+Content pending further review.
+
 Core delivery C# ASP.NET backend template.
 
 * [Install MongoDB](#install-mongodb)
@@ -77,7 +79,7 @@ dotnet test
 
 Run CDP-Deployments application:
 ```bash
-dotnet run --project TradeImportsDecisionComparer --launch-profile Development
+dotnet run --project ./src/Comparer --launch-profile TradeImportsDecisionComparer
 ```
 
 ### SonarCloud
