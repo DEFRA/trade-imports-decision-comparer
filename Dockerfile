@@ -29,7 +29,6 @@ COPY Defra.TradeImportsDecisionComparer.sln Defra.TradeImportsDecisionComparer.s
 COPY Directory.Build.props Directory.Build.props
 
 COPY NuGet.config NuGet.config
-RUN cat NuGet.config
 ARG DEFRA_NUGET_PAT
 
 RUN dotnet restore
