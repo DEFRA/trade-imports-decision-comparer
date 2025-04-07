@@ -18,6 +18,8 @@ WORKDIR /src
 
 COPY .config/dotnet-tools.json .config/dotnet-tools.json
 COPY .csharpierrc .csharpierrc
+COPY NuGet.config NuGet.config
+ARG DEFRA_NUGET_PAT
 
 RUN dotnet tool restore
 
