@@ -18,8 +18,6 @@ WORKDIR /src
 
 COPY .config/dotnet-tools.json .config/dotnet-tools.json
 COPY .csharpierrc .csharpierrc
-COPY NuGet.config NuGet.config
-ARG DEFRA_NUGET_PAT
 
 RUN dotnet tool restore
 
@@ -29,6 +27,9 @@ COPY tests/Comparer.Tests/Comparer.Tests.csproj tests/Comparer.Tests/Comparer.Te
 COPY tests/Comparer.IntegrationTests/Comparer.IntegrationTests.csproj tests/Comparer.IntegrationTests/Comparer.IntegrationTests.csproj
 COPY Defra.TradeImportsDecisionComparer.sln Defra.TradeImportsDecisionComparer.sln
 COPY Directory.Build.props Directory.Build.props
+COPY NuGet.config NuGet.config
+RUN cat NuGet.config
+ARG DEFRA_NUGET_PAT
 
 RUN dotnet restore
 
