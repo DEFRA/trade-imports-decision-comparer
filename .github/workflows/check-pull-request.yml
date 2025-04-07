@@ -26,7 +26,7 @@ jobs:
       - name: Update NuGet.config
         run: |
           dotnet nuget remove source defra
-          dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name defra "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name defra "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --configfile NuGet.config
       - name: Test
         run: dotnet test
       - name: Check Dockerfile Builds
@@ -36,7 +36,6 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: trade-imports-decision-comparer:latest
-          build-args: DEFRA_NUGET_PAT=${{ secrets.GITHUB_TOKEN }}
       - name: Check with Trivy
         run: docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image trade-imports-decision-comparer:latest --ignore-unfixed
   sonarcloud-scan:
