@@ -28,6 +28,9 @@ COPY tests/Comparer.IntegrationTests/Comparer.IntegrationTests.csproj tests/Comp
 COPY Defra.TradeImportsDecisionComparer.sln Defra.TradeImportsDecisionComparer.sln
 COPY Directory.Build.props Directory.Build.props
 
+COPY NuGet.config NuGet.config
+ARG DEFRA_NUGET_PAT
+
 RUN dotnet restore
 
 COPY src/Comparer src/Comparer
