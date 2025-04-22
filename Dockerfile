@@ -42,8 +42,7 @@ RUN dotnet csharpier --check .
 
 RUN dotnet build src/Comparer/Comparer.csproj --no-restore -c Release
 
-RUN dotnet test --no-restore tests/Comparer.Tests
-RUN dotnet test --no-restore tests/Comparer.IntegrationTests
+RUN dotnet test --no-restore --filter "Category!=IntegrationTest"
 
 FROM build AS publish
 

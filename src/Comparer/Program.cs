@@ -1,3 +1,6 @@
+using Defra.TradeImportsDecisionComparer.Comparer.Authentication;
+using Defra.TradeImportsDecisionComparer.Comparer.Data.Extensions;
+using Defra.TradeImportsDecisionComparer.Comparer.Health;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
 using Microsoft.AspNetCore.Diagnostics;
@@ -43,26 +46,18 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
     // Load certificates into Trust Store - Note must happen before Mongo and Http client connections
     builder.Services.AddCustomTrustStore();
 
-    // Configure logging to use the CDP Platform standards.
-    builder.Services.AddHttpContextAccessor();
-    if (!integrationTest)
-        // Configuring Serilog below wipes out the framework logging
-        // so we don't execute the following when the host is running
-        // within an integration test
-        builder.Host.UseSerilog(CdpLogging.Configuration);
+    builder.ConfigureLoggingAndTracing(integrationTest);
 
     // This adds default rate limiter, total request timeout, retries, circuit breaker and timeout per attempt
     builder.Services.ConfigureHttpClientDefaults(options => options.AddStandardResilienceHandler());
     builder.Services.AddProblemDetails();
     builder.Services.AddHealthChecks();
-
+    builder.Services.AddHealth();
     builder.Services.AddHttpClient();
-    builder.Services.AddHeaderPropagation(options =>
-    {
-        var traceHeader = builder.Configuration.GetValue<string>("TraceHeader");
-        if (!string.IsNullOrWhiteSpace(traceHeader))
-            options.Headers.Add(traceHeader);
-    });
+
+    builder.Services.AddDbContext(builder.Configuration);
+
+    builder.Services.AddAuthenticationAuthorization();
 }
 
 static WebApplication BuildWebApplication(WebApplicationBuilder builder)
@@ -70,8 +65,9 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
     var app = builder.Build();
 
     app.UseHeaderPropagation();
-    app.MapHealthChecks("/health");
-
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.MapHealth();
     app.UseStatusCodePages();
     app.UseExceptionHandler(
         new ExceptionHandlerOptions
