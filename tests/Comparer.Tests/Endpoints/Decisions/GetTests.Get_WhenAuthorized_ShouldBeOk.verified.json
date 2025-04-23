@@ -1,0 +1,30 @@
+﻿{
+  "alvsDecision": {
+    "id": "mrn",
+    "eTag": null,
+    "created": "2025-04-23T08:30:00Z",
+    "updated": "2025-04-23T08:30:00Z",
+    "decisions": [
+      {
+        "created": "2025-04-23T08:30:00Z",
+        "xml": "<xml decision=\"1\"/>"
+      }
+    ]
+  },
+  "btmsDecision": {
+    "id": "mrn",
+    "eTag": null,
+    "created": "2025-04-23T08:31:00Z",
+    "updated": "2025-04-23T08:32:00Z",
+    "decisions": [
+      {
+        "created": "2025-04-23T08:31:00Z",
+        "xml": "<xml decision=\"1\"/>"
+      },
+      {
+        "created": "2025-04-23T08:32:00Z",
+        "xml": "<xml decision=\"2\"/>"
+      }
+    ]
+  }
+}
