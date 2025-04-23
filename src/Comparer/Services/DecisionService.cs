@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using Defra.TradeImportsDecisionComparer.Comparer.Data;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Services;
 
+[ExcludeFromCodeCoverage] // see integration tests
 public class DecisionService(IDbContext dbContext) : IDecisionService
 {
     public async Task<AlvsDecisionEntity> AppendAlvsDecision(
