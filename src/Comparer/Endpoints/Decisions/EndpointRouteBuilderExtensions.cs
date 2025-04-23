@@ -16,6 +16,9 @@ public static class EndpointRouteBuilderExtensions
 
         route = app.MapPut("btms-decisions/{mrn}/", PutBtms).RequireAuthorization(PolicyNames.Write);
         AllowAnonymousForDevelopment(isDevelopment, route);
+
+        route = app.MapGet("decisions/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
+        AllowAnonymousForDevelopment(isDevelopment, route);
     }
 
     [ExcludeFromCodeCoverage]
@@ -40,6 +43,19 @@ public static class EndpointRouteBuilderExtensions
         [FromServices] IDecisionService decisionService,
         CancellationToken cancellationToken
     ) => await ReadAndSave(context, (d, ct) => decisionService.AppendBtmsDecision(mrn, d, ct), cancellationToken);
+
+    [HttpGet]
+    private static async Task<IResult> Get(
+        [FromRoute] string mrn,
+        [FromServices] IDecisionService decisionService,
+        CancellationToken cancellationToken
+    )
+    {
+        var alvsDecision = await decisionService.GetAlvsDecision(mrn, cancellationToken);
+        var btmsDecision = await decisionService.GetBtmsDecision(mrn, cancellationToken);
+
+        return Results.Ok(new { alvsDecision, btmsDecision });
+    }
 
     private static async Task<IResult> ReadAndSave(
         HttpContext context,

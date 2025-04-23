@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 using MongoDB.Driver;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Data.Mongo;
@@ -9,6 +10,8 @@ public class MongoDbContext : IDbContext
     public MongoDbContext(IMongoDatabase database)
     {
         Database = database;
+        AlvsDecisions = new MongoCollectionSet<AlvsDecisionEntity>(this);
+        BtmsDecisions = new MongoCollectionSet<BtmsDecisionEntity>(this);
     }
 
     internal IMongoDatabase Database { get; }
@@ -22,6 +25,9 @@ public class MongoDbContext : IDbContext
         return ActiveTransaction;
     }
 
+    public IMongoCollectionSet<AlvsDecisionEntity> AlvsDecisions { get; }
+    public IMongoCollectionSet<BtmsDecisionEntity> BtmsDecisions { get; }
+
     public async Task SaveChangesAsync(CancellationToken cancellation = default)
     {
         if (GetChangedRecordsCount() == 0)
@@ -31,14 +37,14 @@ public class MongoDbContext : IDbContext
 
         if (GetChangedRecordsCount() == 1)
         {
-            await InternalSaveChangesAsync();
+            await InternalSaveChangesAsync(cancellation);
             return;
         }
 
         using var transaction = await StartTransaction(cancellation);
         try
         {
-            await InternalSaveChangesAsync();
+            await InternalSaveChangesAsync(cancellation);
             await transaction.CommitTransaction(cancellation);
         }
         catch (Exception)
@@ -48,17 +54,16 @@ public class MongoDbContext : IDbContext
         }
     }
 
-    private const int ChangedRecordsCount = 0;
-
-    private static int GetChangedRecordsCount()
+    private int GetChangedRecordsCount()
     {
         // This logic needs to be reviewed as it's easy to forget to include any new collection sets
-        return ChangedRecordsCount;
+        return AlvsDecisions.PendingChanges + BtmsDecisions.PendingChanges;
     }
 
-    private static Task InternalSaveChangesAsync()
+    private async Task InternalSaveChangesAsync(CancellationToken cancellation = default)
     {
         // This logic needs to be reviewed as it's easy to forget to include any new collection sets
-        return Task.CompletedTask;
+        await AlvsDecisions.PersistAsync(cancellation);
+        await BtmsDecisions.PersistAsync(cancellation);
     }
 }
