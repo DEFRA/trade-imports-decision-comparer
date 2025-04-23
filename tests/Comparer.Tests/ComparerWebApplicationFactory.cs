@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Hosting;
 
-namespace Defra.TradeImportsDecisionComparer.Comparer.IntegrationTests;
+namespace Defra.TradeImportsDecisionComparer.Comparer.Tests;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class ComparerWebApplicationFactory : TestWebApplicationFactory<Program>
