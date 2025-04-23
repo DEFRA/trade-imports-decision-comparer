@@ -1,6 +1,8 @@
 using Defra.TradeImportsDecisionComparer.Comparer.Authentication;
 using Defra.TradeImportsDecisionComparer.Comparer.Data.Extensions;
+using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Decisions;
 using Defra.TradeImportsDecisionComparer.Comparer.Health;
+using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
 using Microsoft.AspNetCore.Diagnostics;
@@ -54,20 +56,22 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
     builder.Services.AddHealthChecks();
     builder.Services.AddHealth();
     builder.Services.AddHttpClient();
-
     builder.Services.AddDbContext(builder.Configuration);
-
     builder.Services.AddAuthenticationAuthorization();
+
+    builder.Services.AddTransient<IDecisionService, DecisionService>();
 }
 
 static WebApplication BuildWebApplication(WebApplicationBuilder builder)
 {
     var app = builder.Build();
+    var isDevelopment = app.Environment.IsDevelopment();
 
     app.UseHeaderPropagation();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapHealth();
+    app.MapDecisionEndpoints(isDevelopment);
     app.UseStatusCodePages();
     app.UseExceptionHandler(
         new ExceptionHandlerOptions
