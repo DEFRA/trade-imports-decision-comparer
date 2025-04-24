@@ -1,6 +1,7 @@
 using Defra.TradeImportsDecisionComparer.Comparer.Authentication;
 using Defra.TradeImportsDecisionComparer.Comparer.Data.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Decisions;
+using Defra.TradeImportsDecisionComparer.Comparer.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Health;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils;
@@ -60,6 +61,7 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
     builder.Services.AddAuthenticationAuthorization();
 
     builder.Services.AddTransient<IDecisionService, DecisionService>();
+    builder.Services.AddConsumers(builder.Configuration);
 }
 
 static WebApplication BuildWebApplication(WebApplicationBuilder builder)

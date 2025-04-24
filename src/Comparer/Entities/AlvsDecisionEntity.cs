@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Defra.TradeImportsDecisionComparer.Comparer.Data.Entities;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 
