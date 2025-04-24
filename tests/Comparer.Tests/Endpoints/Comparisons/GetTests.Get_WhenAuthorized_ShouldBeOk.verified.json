@@ -1,0 +1,18 @@
+﻿{
+  "id": "mrn",
+  "eTag": null,
+  "created": "2025-04-23T08:30:00Z",
+  "updated": "2025-04-23T08:30:00Z",
+  "comparisons": [
+    {
+      "created": "2025-04-23T08:30:00Z",
+      "alvsXml": "<xml alvs=\"true\"/>",
+      "btmsXml": "<xml btms=\"true\"/>",
+      "match": false,
+      "reasons": [
+        "Reason 1",
+        "Reason 2"
+      ]
+    }
+  ]
+}

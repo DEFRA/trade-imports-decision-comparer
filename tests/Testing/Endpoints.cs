@@ -22,4 +22,11 @@ public static class Endpoints
             public static string Put(string mrn) => $"{Root(BtmsPrefix)}/{mrn}";
         }
     }
+
+    public static class Comparisons
+    {
+        private static string Root => "/comparisons";
+
+        public static string Get(string mrn) => $"{Root}/{mrn}";
+    }
 }
