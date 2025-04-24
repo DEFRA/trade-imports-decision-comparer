@@ -51,13 +51,15 @@ public static class WebApplicationBuilderExtensions
     )
     {
         var httpAccessor = services.GetRequiredService<IHttpContextAccessor>();
+        var traceHeader = services.GetRequiredService<IOptions<TraceHeader>>().Value;
         var serviceVersion = Environment.GetEnvironmentVariable("SERVICE_VERSION") ?? "";
 
         config
             .ReadFrom.Configuration(hostBuilderContext.Configuration)
             .Enrich.WithEcsHttpContext(httpAccessor)
             .Enrich.FromLogContext()
-            .Enrich.With(new TraceContextEnricher());
+            .Enrich.With(new TraceContextEnricher())
+            .Enrich.WithCorrelationId(traceHeader.Name);
 
         if (!string.IsNullOrWhiteSpace(serviceVersion))
             config.Enrich.WithProperty("service.version", serviceVersion);
