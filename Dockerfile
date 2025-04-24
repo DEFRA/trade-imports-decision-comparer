@@ -18,6 +18,7 @@ WORKDIR /src
 
 COPY .config/dotnet-tools.json .config/dotnet-tools.json
 COPY .csharpierrc .csharpierrc
+COPY .csharpierignore .csharpierignore
 
 RUN dotnet tool restore
 
@@ -38,7 +39,7 @@ COPY tests/Testing tests/Testing
 COPY tests/Comparer.Tests tests/Comparer.Tests
 COPY tests/Comparer.IntegrationTests tests/Comparer.IntegrationTests
 
-RUN dotnet csharpier --check .
+RUN dotnet csharpier check .
 
 RUN dotnet build src/Comparer/Comparer.csproj --no-restore -c Release
 
