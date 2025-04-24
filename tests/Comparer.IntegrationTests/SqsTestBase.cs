@@ -15,16 +15,27 @@ public class SqsTestBase(ITestOutputHelper output) : IntegrationTestBase
         new AmazonSQSConfig { AuthenticationRegion = "eu-west-2", ServiceURL = "http://localhost:4566" }
     );
 
-    protected Task<ReceiveMessageResponse> ReceiveMessage()
+    private Task<ReceiveMessageResponse> ReceiveMessage()
     {
         return _sqsClient.ReceiveMessageAsync(QueueUrl, CancellationToken.None);
     }
 
-    protected Task<GetQueueAttributesResponse> GetQueueAttributes()
+    private Task<GetQueueAttributesResponse> GetQueueAttributes()
     {
         return _sqsClient.GetQueueAttributesAsync(
             new GetQueueAttributesRequest { AttributeNames = ["ApproximateNumberOfMessages"], QueueUrl = QueueUrl },
             CancellationToken.None
+        );
+    }
+
+    protected async Task DrainAllMessages()
+    {
+        Assert.True(
+            await AsyncWaiter.WaitForAsync(async () =>
+            {
+                await ReceiveMessage();
+                return (await GetQueueAttributes()).ApproximateNumberOfMessages == 0;
+            })
         );
     }
 
