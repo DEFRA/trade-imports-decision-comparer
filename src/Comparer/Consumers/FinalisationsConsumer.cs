@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Defra.TradeImportsDataApi.Domain.CustomsDeclaration;
 using Defra.TradeImportsDataApi.Domain.Events;
@@ -9,6 +10,7 @@ using SlimMessageBus.Host.AmazonSQS;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Consumers;
 
+[ExcludeFromCodeCoverage] // see integration tests
 // ReSharper disable once ClassNeverInstantiated.Global
 public class FinalisationsConsumer(
     IDecisionService decisionService,
