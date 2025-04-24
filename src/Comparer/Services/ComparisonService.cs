@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using Defra.TradeImportsDecisionComparer.Comparer.Data;
 using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Services;
 
+[ExcludeFromCodeCoverage] // see integration tests
 public class ComparisonService(IDbContext dbContext) : IComparisonService
 {
     public Task<ComparisonEntity?> Get(string mrn, CancellationToken cancellationToken) =>
