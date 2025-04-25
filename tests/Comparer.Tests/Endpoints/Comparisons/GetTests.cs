@@ -6,19 +6,19 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Xunit.Abstractions;
 
-namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.Decisions;
+namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.Comparisons;
 
 public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : EndpointTestBase(factory, outputHelper)
 {
     private const string Mrn = "mrn";
-    private IDecisionService MockDecisionService { get; } = Substitute.For<IDecisionService>();
+    private IComparisonService MockComparerService { get; } = Substitute.For<IComparisonService>();
 
     protected override void ConfigureTestServices(IServiceCollection services)
     {
         base.ConfigureTestServices(services);
 
-        services.AddTransient<IDecisionService>(_ => MockDecisionService);
+        services.AddTransient<IComparisonService>(_ => MockComparerService);
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     {
         var client = CreateClient(addDefaultAuthorizationHeader: false);
 
-        var response = await client.GetAsync(Testing.Endpoints.Decisions.Get(Mrn));
+        var response = await client.GetAsync(Testing.Endpoints.Comparisons.Get(Mrn));
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -36,7 +36,7 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     {
         var client = CreateClient(testUser: TestUser.WriteOnly);
 
-        var response = await client.GetAsync(Testing.Endpoints.Decisions.Get(Mrn));
+        var response = await client.GetAsync(Testing.Endpoints.Comparisons.Get(Mrn));
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -45,37 +45,28 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     public async Task Get_WhenAuthorized_ShouldBeOk()
     {
         var client = CreateClient();
-        MockDecisionService
-            .GetAlvsDecision(Mrn, Arg.Any<CancellationToken>())
+        MockComparerService
+            .Get(Mrn, Arg.Any<CancellationToken>())
             .Returns(
-                new AlvsDecisionEntity
+                new ComparisonEntity
                 {
                     Id = Mrn,
                     Created = new DateTime(2025, 4, 23, 8, 30, 0, DateTimeKind.Utc),
                     Updated = new DateTime(2025, 4, 23, 8, 30, 0, DateTimeKind.Utc),
-                    Decisions =
+                    Comparisons =
                     [
-                        new Decision(new DateTime(2025, 4, 23, 8, 30, 0, DateTimeKind.Utc), "<xml decision=\"1\"/>"),
-                    ],
-                }
-            );
-        MockDecisionService
-            .GetBtmsDecision(Mrn, Arg.Any<CancellationToken>())
-            .Returns(
-                new BtmsDecisionEntity
-                {
-                    Id = Mrn,
-                    Created = new DateTime(2025, 4, 23, 8, 31, 0, DateTimeKind.Utc),
-                    Updated = new DateTime(2025, 4, 23, 8, 32, 0, DateTimeKind.Utc),
-                    Decisions =
-                    [
-                        new Decision(new DateTime(2025, 4, 23, 8, 31, 0, DateTimeKind.Utc), "<xml decision=\"1\"/>"),
-                        new Decision(new DateTime(2025, 4, 23, 8, 32, 0, DateTimeKind.Utc), "<xml decision=\"2\"/>"),
+                        new Comparison(
+                            new DateTime(2025, 4, 23, 8, 30, 0, DateTimeKind.Utc),
+                            "<xml alvs=\"true\"/>",
+                            "<xml btms=\"true\"/>",
+                            false,
+                            ["Reason 1", "Reason 2"]
+                        ),
                     ],
                 }
             );
 
-        var response = await client.GetAsync(Testing.Endpoints.Decisions.Get(Mrn));
+        var response = await client.GetAsync(Testing.Endpoints.Comparisons.Get(Mrn));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 

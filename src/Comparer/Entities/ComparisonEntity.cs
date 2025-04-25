@@ -3,7 +3,7 @@ using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Entities;
 
-public class AlvsDecisionEntity : IDataEntity
+public class ComparisonEntity : IDataEntity
 {
     public required string Id { get; set; }
 
@@ -13,7 +13,7 @@ public class AlvsDecisionEntity : IDataEntity
 
     public DateTime Updated { get; set; }
 
-    public required List<Decision> Decisions { get; set; } = [];
+    public required List<Comparison> Comparisons { get; set; } = [];
 
     public void OnSave() { }
 }

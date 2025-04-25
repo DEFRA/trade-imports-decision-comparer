@@ -10,13 +10,13 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     : EndpointTestBase(factory, outputHelper)
 {
     private const string Mrn = "mrn";
-    private IDecisionService MockGmrService { get; } = Substitute.For<IDecisionService>();
+    private IDecisionService MockDecisionService { get; } = Substitute.For<IDecisionService>();
 
     protected override void ConfigureTestServices(IServiceCollection services)
     {
         base.ConfigureTestServices(services);
 
-        services.AddTransient<IDecisionService>(_ => MockGmrService);
+        services.AddTransient<IDecisionService>(_ => MockDecisionService);
     }
 
     [Fact]

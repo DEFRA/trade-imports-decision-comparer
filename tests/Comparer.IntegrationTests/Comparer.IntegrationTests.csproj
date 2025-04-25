@@ -20,6 +20,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="WireMock.Net.RestClient" Version="1.7.4" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />
