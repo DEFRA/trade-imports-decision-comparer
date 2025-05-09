@@ -9,7 +9,6 @@ using Xunit.Abstractions;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.IntegrationTests.Consumers;
 
-[Collection(nameof(WireMockClientCollection))]
 public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(output)
 {
     private static readonly JsonSerializerOptions s_options = new() { PropertyNameCaseInsensitive = true };

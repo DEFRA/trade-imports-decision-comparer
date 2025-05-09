@@ -34,8 +34,6 @@ services:
         condition: service_healthy
       localstack:
         condition: service_healthy
-      wiremock:
-        condition: service_started
     env_file:
       - 'compose/aws.env'
     environment:
@@ -43,7 +41,6 @@ services:
       ENVIRONMENT: local
       PORT: 8080
       Mongo__DatabaseUri: mongodb://mongodb:27017/?directConnection=true
-      DataApi__BaseAddress: "http://wiremock"
       SQS_ENDPOINT: http://localstack:4566
     ports:
       - "8080:8080"
@@ -75,13 +72,6 @@ services:
       interval: 5s
       start_period: 5s
       retries: 10
-  
-  wiremock:
-    environment:
-      TZ: Europe/London
-    image: sheyenrath/wiremock.net:latest
-    ports:
-      - "9090:80"
 
 volumes:
   mongodb-data:
