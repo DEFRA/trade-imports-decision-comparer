@@ -1,6 +1,7 @@
+using Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints;
 using Xunit.Abstractions;
 
-namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.Health;
+namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Health;
 
 public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : EndpointTestBase(factory, outputHelper)
