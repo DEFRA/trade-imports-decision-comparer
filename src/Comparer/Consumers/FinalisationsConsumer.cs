@@ -39,9 +39,7 @@ public class FinalisationsConsumer(
             await comparisonService.Get(message.ResourceId, cancellationToken)
             ?? new ComparisonEntity { Id = message.ResourceId, Comparisons = [] };
 
-        comparison.Comparisons.Add(
-            new Comparison(DateTime.UtcNow, latestAlvs?.Xml, latestBtms?.Xml, false, Reasons: null)
-        );
+        comparison.Comparisons.Add(Comparison.Create(latestAlvs?.Xml, latestBtms?.Xml));
 
         await comparisonService.Save(comparison, cancellationToken);
     }
