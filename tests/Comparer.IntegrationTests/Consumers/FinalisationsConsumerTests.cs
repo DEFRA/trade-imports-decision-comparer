@@ -92,13 +92,7 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
                     JsonSerializer.Deserialize<ComparisonEntity>(content, s_options)
                     ?? throw new Exception("Failed to deserialize");
 
-                return entity.Comparisons
-                    is [
-                        {
-                            AlvsXml: sampleDecision,
-                            BtmsXml: sampleDecision
-                        },
-                    ];
+                return entity.Comparisons is [{ AlvsXml: sampleDecision, BtmsXml: sampleDecision }];
             })
         );
 
@@ -134,14 +128,8 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
 
                 return entity.Comparisons
                     is [
-                        {
-                            AlvsXml: sampleDecision,
-                            BtmsXml: sampleDecision
-                        },
-                        {
-                            AlvsXml: sampleDecision,
-                            BtmsXml: sampleDecision
-                        },
+                        { AlvsXml: sampleDecision, BtmsXml: sampleDecision },
+                        { AlvsXml: sampleDecision, BtmsXml: sampleDecision },
                     ];
             })
         );
