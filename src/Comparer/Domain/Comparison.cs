@@ -11,7 +11,7 @@ public record Comparison(
     [property: JsonPropertyName("reasons")] string[]? Reasons
 )
 {
-    internal static Comparison Create(string? alvsXml, string? btmsXml)
+    public static Comparison Create(string? alvsXml, string? btmsXml)
     {
         var alvsItems = Item.FromXml(alvsXml);
         var btmsItems = Item.FromXml(btmsXml);
