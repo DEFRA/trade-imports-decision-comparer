@@ -10,7 +10,7 @@ public record Item(
     [property: JsonPropertyName("checks")] List<Check> Checks
 )
 {
-    internal static List<Item> FromXml(string? xml)
+    public static List<Item> FromXml(string? xml)
     {
         if (string.IsNullOrEmpty(xml))
         {
