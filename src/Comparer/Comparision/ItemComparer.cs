@@ -25,7 +25,7 @@ public static class ItemComparer
             outcomes.Add(item.Compare(againstItem));
         }
 
-        return outcomes.Max();
+        return outcomes.Any() ? outcomes.Max() : ComparisionOutcome.Mismatch;
     }
 
     public static ComparisionOutcome Compare(this Item item, Item against)
