@@ -1,4 +1,5 @@
 using System.Net;
+using Defra.TradeImportsDecisionComparer.Comparer.Comparision;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
@@ -59,7 +60,7 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
                             new DateTime(2025, 4, 23, 8, 30, 0, DateTimeKind.Utc),
                             "<xml alvs=\"true\"/>",
                             "<xml btms=\"true\"/>",
-                            false,
+                            ComparisionOutcome.ExactMatch,
                             ["Reason 1", "Reason 2"]
                         ),
                     ],

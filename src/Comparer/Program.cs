@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Defra.TradeImportsDecisionComparer.Comparer.Authentication;
 using Defra.TradeImportsDecisionComparer.Comparer.Data.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Comparisons;
@@ -46,6 +47,11 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
         integrationTest
     );
     builder.Configuration.AddEnvironmentVariables();
+
+    builder.Services.ConfigureHttpJsonOptions(options =>
+    {
+        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
     // Load certificates into Trust Store - Note must happen before Mongo and Http client connections
     builder.Services.AddCustomTrustStore();
