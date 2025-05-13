@@ -13,6 +13,7 @@ public class MongoDbContext : IDbContext
         AlvsDecisions = new MongoCollectionSet<AlvsDecisionEntity>(this);
         BtmsDecisions = new MongoCollectionSet<BtmsDecisionEntity>(this);
         Comparisons = new MongoCollectionSet<ComparisonEntity>(this);
+        AlvsOutboundErrors = new MongoCollectionSet<AlvsOutboundErrorEntity>(this);
     }
 
     internal IMongoDatabase Database { get; }
@@ -29,6 +30,7 @@ public class MongoDbContext : IDbContext
     public IMongoCollectionSet<AlvsDecisionEntity> AlvsDecisions { get; }
     public IMongoCollectionSet<BtmsDecisionEntity> BtmsDecisions { get; }
     public IMongoCollectionSet<ComparisonEntity> Comparisons { get; }
+    public IMongoCollectionSet<AlvsOutboundErrorEntity> AlvsOutboundErrors { get; }
 
     public async Task SaveChangesAsync(CancellationToken cancellation = default)
     {

@@ -7,5 +7,6 @@ public interface IDbContext
     IMongoCollectionSet<AlvsDecisionEntity> AlvsDecisions { get; }
     IMongoCollectionSet<BtmsDecisionEntity> BtmsDecisions { get; }
     IMongoCollectionSet<ComparisonEntity> Comparisons { get; }
+    IMongoCollectionSet<AlvsOutboundErrorEntity> AlvsOutboundErrors { get; }
     Task SaveChangesAsync(CancellationToken cancellation = default);
 }
