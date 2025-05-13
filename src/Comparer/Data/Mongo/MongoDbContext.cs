@@ -13,6 +13,7 @@ public class MongoDbContext : IDbContext
         AlvsDecisions = new MongoCollectionSet<AlvsDecisionEntity>(this);
         BtmsDecisions = new MongoCollectionSet<BtmsDecisionEntity>(this);
         Comparisons = new MongoCollectionSet<ComparisonEntity>(this);
+        AlvsOutboundErrors = new MongoCollectionSet<AlvsOutboundErrorEntity>(this);
     }
 
     internal IMongoDatabase Database { get; }
@@ -29,6 +30,7 @@ public class MongoDbContext : IDbContext
     public IMongoCollectionSet<AlvsDecisionEntity> AlvsDecisions { get; }
     public IMongoCollectionSet<BtmsDecisionEntity> BtmsDecisions { get; }
     public IMongoCollectionSet<ComparisonEntity> Comparisons { get; }
+    public IMongoCollectionSet<AlvsOutboundErrorEntity> AlvsOutboundErrors { get; }
 
     public async Task SaveChangesAsync(CancellationToken cancellation = default)
     {
@@ -59,7 +61,10 @@ public class MongoDbContext : IDbContext
     private int GetChangedRecordsCount()
     {
         // This logic needs to be reviewed as it's easy to forget to include any new collection sets
-        return AlvsDecisions.PendingChanges + BtmsDecisions.PendingChanges + Comparisons.PendingChanges;
+        return AlvsDecisions.PendingChanges
+            + BtmsDecisions.PendingChanges
+            + Comparisons.PendingChanges
+            + AlvsOutboundErrors.PendingChanges;
     }
 
     private async Task InternalSaveChangesAsync(CancellationToken cancellation = default)
@@ -68,5 +73,6 @@ public class MongoDbContext : IDbContext
         await AlvsDecisions.PersistAsync(cancellation);
         await BtmsDecisions.PersistAsync(cancellation);
         await Comparisons.PersistAsync(cancellation);
+        await AlvsOutboundErrors.PersistAsync(cancellation);
     }
 }
