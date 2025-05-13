@@ -61,7 +61,10 @@ public class MongoDbContext : IDbContext
     private int GetChangedRecordsCount()
     {
         // This logic needs to be reviewed as it's easy to forget to include any new collection sets
-        return AlvsDecisions.PendingChanges + BtmsDecisions.PendingChanges + Comparisons.PendingChanges + AlvsOutboundErrors.PendingChanges;
+        return AlvsDecisions.PendingChanges
+            + BtmsDecisions.PendingChanges
+            + Comparisons.PendingChanges
+            + AlvsOutboundErrors.PendingChanges;
     }
 
     private async Task InternalSaveChangesAsync(CancellationToken cancellation = default)
