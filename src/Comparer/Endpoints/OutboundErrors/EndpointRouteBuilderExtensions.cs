@@ -64,6 +64,6 @@ public static class EndpointRouteBuilderExtensions
 
         await save(new OutboundError(DateTime.UtcNow, xml), cancellationToken);
 
-        return Results.Content(xml, "application/xml", Encoding.UTF8);
+        return Results.Ok();
     }
 }
