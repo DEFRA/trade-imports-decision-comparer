@@ -31,6 +31,32 @@ public class OutboundErrorService(IDbContext dbContext) : IOutboundErrorService
         return entity;
     }
 
+    public async Task<BtmsOutboundErrorEntity> AppendBtmsOutboundError(
+        string mrn,
+        OutboundError outboundError,
+        CancellationToken cancellationToken
+    )
+    {
+        var entity = await dbContext.BtmsOutboundErrors.Find(mrn, cancellationToken);
+        if (entity == null)
+        {
+            entity = new BtmsOutboundErrorEntity { Id = mrn, Errors = [outboundError] };
+            await dbContext.BtmsOutboundErrors.Insert(entity, cancellationToken);
+        }
+        else
+        {
+            entity.Errors.Add(outboundError);
+            await dbContext.BtmsOutboundErrors.Update(entity, cancellationToken);
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return entity;
+    }
+
     public Task<AlvsOutboundErrorEntity?> GetAlvsOutboundError(string mrn, CancellationToken cancellationToken) =>
         dbContext.AlvsOutboundErrors.Find(mrn, cancellationToken);
+
+    public Task<BtmsOutboundErrorEntity?> GetBtmsOutboundError(string mrn, CancellationToken cancellationToken) =>
+        dbContext.BtmsOutboundErrors.Find(mrn, cancellationToken);
 }
