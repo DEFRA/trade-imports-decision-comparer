@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using Defra.TradeImportsDataApi.Domain.CustomsDeclaration;
 using Defra.TradeImportsDataApi.Domain.Events;
@@ -65,19 +66,19 @@ public class ParityTests(ITestOutputHelper output) : SqsTestBase(output)
 
     private async Task InsertDecisionsForMrn(string mrn, string alvsDecisionXml, string btmsDecisionXml)
     {
-        ////var client = CreateClient();
+        var client = CreateClient();
 
-        ////var response = await client.PutAsync(
-        ////    Testing.Endpoints.Decisions.Alvs.Put(mrn),
-        ////    new StringContent(alvsDecisionXml, Encoding.UTF8, "application/xml")
-        ////);
-        ////response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var response = await client.PutAsync(
+            Testing.Endpoints.Decisions.Alvs.Put(mrn),
+            new StringContent(alvsDecisionXml, Encoding.UTF8, "application/xml")
+        );
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        ////response = await client.PutAsync(
-        ////    Testing.Endpoints.Decisions.Btms.Put(mrn),
-        ////    new StringContent(btmsDecisionXml, Encoding.UTF8, "application/xml")
-        ////);
-        ////response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response = await client.PutAsync(
+            Testing.Endpoints.Decisions.Btms.Put(mrn),
+            new StringContent(btmsDecisionXml, Encoding.UTF8, "application/xml")
+        );
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         Console.Write(alvsDecisionXml);
         Console.Write(btmsDecisionXml);
         var message = new ResourceEvent<CustomsDeclaration>
