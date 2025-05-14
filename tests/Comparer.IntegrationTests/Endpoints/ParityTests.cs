@@ -42,14 +42,13 @@ public class ParityTests(ITestOutputHelper output) : SqsTestBase(output)
     public async Task WhenParityExists_ShouldReturnResults()
     {
         await DrainAllMessages();
-        ClearDatabase();
         var client = CreateClient();
-
+        var start = DateTime.UtcNow;
         await InsertDecisionsForMrn("parity-mrn1", decision1, decision1);
         await InsertDecisionsForMrn("parity-mrn2", decision2, decision3);
         await InsertDecisionsForMrn("parity-mrn3", decision2, decision1);
 
-        var response = await client.GetAsync(Testing.Endpoints.Parity.Get(null, null));
+        var response = await client.GetAsync(Testing.Endpoints.Parity.Get(start, null));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
