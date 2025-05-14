@@ -4,6 +4,7 @@ using Defra.TradeImportsDecisionComparer.Comparer.Data.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Comparisons;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Decisions;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.OutboundErrors;
+using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Parity;
 using Defra.TradeImportsDecisionComparer.Comparer.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Health;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
@@ -69,6 +70,7 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
     builder.Services.AddAuthenticationAuthorization();
     builder.Services.AddConsumers(builder.Configuration);
 
+    builder.Services.AddTransient<IParityService, ParityService>();
     builder.Services.AddTransient<IOutboundErrorService, OutboundErrorService>();
     builder.Services.AddTransient<IDecisionService, DecisionService>();
     builder.Services.AddTransient<IComparisonService, ComparisonService>();
@@ -85,6 +87,7 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
     app.MapHealth();
     app.MapDecisionEndpoints(isDevelopment);
     app.MapOutboundErrorsEndpoints(isDevelopment);
+    app.MapParityEndpoints(isDevelopment);
     app.MapComparisonEndpoints(isDevelopment);
     app.UseStatusCodePages();
     app.UseExceptionHandler(

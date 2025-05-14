@@ -13,7 +13,9 @@ public class ComparisonEntity : IDataEntity
 
     public DateTime Updated { get; set; }
 
-    public required List<Comparison> Comparisons { get; set; } = [];
+    public required Comparison Latest { get; set; }
+
+    public List<Comparison> History { get; set; } = [];
 
     public void OnSave() { }
 }

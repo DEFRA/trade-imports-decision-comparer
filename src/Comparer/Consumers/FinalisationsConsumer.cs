@@ -35,13 +35,20 @@ public class FinalisationsConsumer(
         var latestAlvs = alvsDecision?.Decisions.LastOrDefault();
         var latestBtms = btmsDecision?.Decisions.LastOrDefault();
 
-        var comparison =
-            await comparisonService.Get(message.ResourceId, cancellationToken)
-            ?? new ComparisonEntity { Id = message.ResourceId, Comparisons = [] };
+        var comparison = Comparison.Create(latestAlvs?.Xml, latestBtms?.Xml);
+        var comparisonEntity = await comparisonService.Get(message.ResourceId, cancellationToken);
 
-        comparison.Comparisons.Add(Comparison.Create(latestAlvs?.Xml, latestBtms?.Xml));
+        if (comparisonEntity is null)
+        {
+            comparisonEntity = new ComparisonEntity { Id = message.ResourceId, Latest = comparison };
+        }
+        else
+        {
+            comparisonEntity.History.Add(comparisonEntity.Latest);
+            comparisonEntity.Latest = comparison;
+        }
 
-        await comparisonService.Save(comparison, cancellationToken);
+        await comparisonService.Save(comparisonEntity, cancellationToken);
     }
 
     public required IConsumerContext Context { get; set; }

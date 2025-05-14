@@ -1,3 +1,6 @@
+using System.Globalization;
+using Microsoft.AspNetCore.Http;
+
 namespace Defra.TradeImportsDecisionComparer.Testing;
 
 public static class Endpoints
@@ -49,5 +52,27 @@ public static class Endpoints
         private static string Root => "/comparisons";
 
         public static string Get(string mrn) => $"{Root}/{mrn}";
+    }
+
+    public static class Parity
+    {
+        private static string Root => "/parity";
+
+        public static string Get(DateTime? start, DateTime? end)
+        {
+            var queryString = QueryString.Empty;
+
+            if (start.HasValue)
+            {
+                queryString.Add(nameof(start), start.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (end.HasValue)
+            {
+                queryString.Add(nameof(end), end.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            return $"{Root}?{queryString.Value}";
+        }
     }
 }
