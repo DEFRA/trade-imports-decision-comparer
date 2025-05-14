@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using Defra.TradeImportsDecisionComparer.Comparer.Authentication;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
@@ -12,6 +11,9 @@ public static class EndpointRouteBuilderExtensions
     public static void MapOutboundErrorsEndpoints(this IEndpointRouteBuilder app, bool isDevelopment)
     {
         var route = app.MapPut("alvs-outbound-errors/{mrn}/", PutAlvs).RequireAuthorization(PolicyNames.Write);
+        AllowAnonymousForDevelopment(isDevelopment, route);
+
+        route = app.MapPut("btms-outbound-errors/{mrn}/", PutBtms).RequireAuthorization(PolicyNames.Write);
         AllowAnonymousForDevelopment(isDevelopment, route);
 
         route = app.MapGet("outbound-errors/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
@@ -38,6 +40,19 @@ public static class EndpointRouteBuilderExtensions
             cancellationToken
         );
 
+    [HttpPut]
+    private static async Task<IResult> PutBtms(
+        [FromRoute] string mrn,
+        HttpContext context,
+        [FromServices] IOutboundErrorService outboundErrorService,
+        CancellationToken cancellationToken
+    ) =>
+        await ReadAndSave(
+            context,
+            (d, ct) => outboundErrorService.AppendBtmsOutboundError(mrn, d, ct),
+            cancellationToken
+        );
+
     [HttpGet]
     private static async Task<IResult> Get(
         [FromRoute] string mrn,
@@ -46,8 +61,9 @@ public static class EndpointRouteBuilderExtensions
     )
     {
         var alvsOutboundError = await outboundErrorService.GetAlvsOutboundError(mrn, cancellationToken);
+        var btmsOutboundError = await outboundErrorService.GetBtmsOutboundError(mrn, cancellationToken);
 
-        return Results.Ok(new { alvsOutboundError });
+        return Results.Ok(new { alvsOutboundError, btmsOutboundError });
     }
 
     [SuppressMessage("SonarLint", "S5131", Justification = "This service cannot be compromised by a malicious user")]

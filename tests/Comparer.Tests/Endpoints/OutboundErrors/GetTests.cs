@@ -60,6 +60,21 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
                 }
             );
 
+        MockOutboundErrorServiceService
+            .GetBtmsOutboundError(Mrn, Arg.Any<CancellationToken>())
+            .Returns(
+                new BtmsOutboundErrorEntity
+                {
+                    Id = Mrn,
+                    Created = new DateTime(2025, 4, 23, 8, 30, 0, DateTimeKind.Utc),
+                    Updated = new DateTime(2025, 4, 23, 8, 30, 0, DateTimeKind.Utc),
+                    Errors =
+                    [
+                        new OutboundError(new DateTime(2025, 4, 23, 8, 30, 0, DateTimeKind.Utc), "<xml error=\"1\"/>"),
+                    ],
+                }
+            );
+
         var response = await client.GetAsync(Testing.Endpoints.OutboundErrors.Get(Mrn));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
