@@ -90,6 +90,6 @@ public class ParityTests(ITestOutputHelper output) : SqsTestBase(output)
         };
 
         await SendMessage(JsonSerializer.Serialize(message));
-        ///await WaitOnMessagesBeingProcessed();
+        await WaitOnMessagesBeingProcessed();
     }
 }
