@@ -51,7 +51,7 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
             .Get(null, null, Arg.Any<CancellationToken>())
             .Returns(
                 new ParityProjection(
-                    new Dictionary<ComparisionOutcome, int>() { { ComparisionOutcome.Mismatch, 3 } },
+                    new Dictionary<string, int>() { { nameof(ComparisionOutcome.Mismatch), 3 } },
                     [Mrn]
                 )
             );
