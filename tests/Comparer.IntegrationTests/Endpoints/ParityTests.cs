@@ -42,6 +42,7 @@ public class ParityTests(ITestOutputHelper output) : SqsTestBase(output)
     public async Task WhenParityExists_ShouldReturnResults()
     {
         await DrainAllMessages();
+        ClearDatabase();
         var client = CreateClient();
 
         await InsertDecisionsForMrn("parity-mrn1", decision1, decision1);
