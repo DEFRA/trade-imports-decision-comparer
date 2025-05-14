@@ -60,4 +60,46 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
 
         await Verify(content);
     }
+
+    [Fact]
+    public async Task PutBtms_WhenUnauthorized_ShouldBeUnauthorized()
+    {
+        var client = CreateClient(addDefaultAuthorizationHeader: false);
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.OutboundErrors.Btms.Put(Mrn),
+            new StringContent("<xml />")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task PutBtms_WhenReadOnly_ShouldBeForbidden()
+    {
+        var client = CreateClient(testUser: TestUser.ReadOnly);
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.OutboundErrors.Btms.Put(Mrn),
+            new StringContent("<xml />")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task PutBtms_WhenValid_ShouldBeRequestBodyAsResponse()
+    {
+        var client = CreateClient();
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.OutboundErrors.Btms.Put(Mrn),
+            new StringContent("<xml alvs=\"true\" />")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+
+        await Verify(content);
+    }
 }

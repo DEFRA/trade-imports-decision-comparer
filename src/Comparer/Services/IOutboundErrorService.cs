@@ -11,5 +11,13 @@ public interface IOutboundErrorService
         CancellationToken cancellationToken
     );
 
+    Task<BtmsOutboundErrorEntity> AppendBtmsOutboundError(
+        string mrn,
+        OutboundError outboundError,
+        CancellationToken cancellationToken
+    );
+
     Task<AlvsOutboundErrorEntity?> GetAlvsOutboundError(string mrn, CancellationToken cancellationToken);
+
+    Task<BtmsOutboundErrorEntity?> GetBtmsOutboundError(string mrn, CancellationToken cancellationToken);
 }

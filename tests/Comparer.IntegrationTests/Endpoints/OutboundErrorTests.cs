@@ -60,7 +60,47 @@ public class OutboundErrorTests : IntegrationTestBase
             JsonSerializer.Deserialize<GetResponse>(content, s_options) ?? throw new Exception("Failed to deserialize");
         result.AlvsOutboundError.Should().NotBeNull();
         result.AlvsOutboundError.Errors.Should().HaveCount(2);
+        result.BtmsOutboundError.Should().BeNull();
     }
 
-    private record GetResponse(AlvsOutboundErrorEntity? AlvsOutboundError);
+    [Fact]
+    public async Task WhenBtmsDecisions_ShouldReturnResults()
+    {
+        var client = CreateClient();
+        var mrn = Guid.NewGuid().ToString("N");
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.OutboundErrors.Btms.Put(mrn),
+            new StringContent("<xml decision=\"1\" />", Encoding.UTF8, "application/xml")
+        );
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        response = await client.GetAsync(Testing.Endpoints.OutboundErrors.Get(mrn));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        var result =
+            JsonSerializer.Deserialize<GetResponse>(content, s_options) ?? throw new Exception("Failed to deserialize");
+        result.AlvsOutboundError.Should().BeNull();
+        result.BtmsOutboundError.Should().NotBeNull();
+        result.BtmsOutboundError.Errors.Should().HaveCount(1);
+
+        response = await client.PutAsync(
+            Testing.Endpoints.OutboundErrors.Btms.Put(mrn),
+            new StringContent("<xml decision=\"2\" />", Encoding.UTF8, "application/xml")
+        );
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        response = await client.GetAsync(Testing.Endpoints.OutboundErrors.Get(mrn));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        content = await response.Content.ReadAsStringAsync();
+        result =
+            JsonSerializer.Deserialize<GetResponse>(content, s_options) ?? throw new Exception("Failed to deserialize");
+        result.AlvsOutboundError.Should().BeNull();
+        result.BtmsOutboundError.Should().NotBeNull();
+        result.BtmsOutboundError.Errors.Should().HaveCount(2);
+    }
+
+    private record GetResponse(AlvsOutboundErrorEntity? AlvsOutboundError, BtmsOutboundErrorEntity? BtmsOutboundError);
 }
