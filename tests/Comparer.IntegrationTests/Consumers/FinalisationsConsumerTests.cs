@@ -50,7 +50,7 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
                     JsonSerializer.Deserialize<ComparisonEntity>(content, s_options)
                     ?? throw new Exception("Failed to deserialize");
 
-                return entity.Comparisons is [{ AlvsXml: null, BtmsXml: null }];
+                return entity.Latest is { AlvsXml: null, BtmsXml: null };
             })
         );
     }
@@ -97,7 +97,7 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
                     JsonSerializer.Deserialize<ComparisonEntity>(content, s_options)
                     ?? throw new Exception("Failed to deserialize");
 
-                return entity.Comparisons is [{ AlvsXml: sampleDecision, BtmsXml: sampleDecision }];
+                return entity.Latest is { AlvsXml: sampleDecision, BtmsXml: sampleDecision };
             })
         );
 
@@ -131,11 +131,11 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
                     JsonSerializer.Deserialize<ComparisonEntity>(content, s_options)
                     ?? throw new Exception("Failed to deserialize");
 
-                return entity.Comparisons
-                    is [
-                        { AlvsXml: sampleDecision, BtmsXml: sampleDecision },
-                        { AlvsXml: sampleDecision, BtmsXml: sampleDecision },
-                    ];
+                return entity
+                    is {
+                        History: [{ AlvsXml: sampleDecision, BtmsXml: sampleDecision }],
+                        Latest: { AlvsXml: sampleDecision, BtmsXml: sampleDecision }
+                    };
             })
         );
     }
