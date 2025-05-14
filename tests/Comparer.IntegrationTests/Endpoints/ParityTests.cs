@@ -35,8 +35,8 @@ public class ParityTests(ITestOutputHelper output) : SqsTestBase(output)
         var result =
             JsonSerializer.Deserialize<ParityProjection>(content, s_options)
             ?? throw new Exception("Failed to deserialize");
-        result.MisMatchMrns.Should().BeEmpty();
-        result.Stats.Should().BeEmpty();
+        result.MisMatchMrns.Should().BeNullOrEmpty();
+        result.Stats.Should().BeNullOrEmpty();
     }
 
     [Fact]
