@@ -25,8 +25,8 @@ public class ParityService(IDbContext dbContext) : IParityService
 
         var countQuery =
             from c in query
-            group c by c.Latest.Match into grp
-            select new KeyValuePair<ComparisionOutcome, int>(grp.Key, grp.Count());
+            group c by c.Latest.Match.ToString() into grp
+            select new KeyValuePair<string, int>(grp.Key, grp.Count());
 
         var misMatchMrnQuery = from c in query where c.Latest.Match == ComparisionOutcome.Mismatch select c.Id;
 
