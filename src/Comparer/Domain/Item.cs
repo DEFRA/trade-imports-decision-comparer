@@ -17,7 +17,9 @@ public record Item(
             return [];
         }
 
-        using XmlReader reader = XmlReader.Create(new StringReader(xml));
+        var decodedXml = xml.Replace("&lt;", "<").Replace("&gt;", ">").Replace("&quot;", "\"");
+
+        using XmlReader reader = XmlReader.Create(new StringReader(decodedXml));
         reader.ReadToFollowing(
             ElementNames.DecisionNotification.LocalName,
             ElementNames.DecisionNotification.NamespaceName
