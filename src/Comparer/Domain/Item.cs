@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Xml;
 using System.Xml.Linq;
+using Defra.TradeImportsDecisionComparer.Comparer.Data.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Extensions;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Domain;
@@ -17,7 +18,7 @@ public record Item(
             return [];
         }
 
-        using XmlReader reader = XmlReader.Create(new StringReader(xml));
+        using XmlReader reader = XmlReader.Create(new StringReader(xml.ToHtmlDecodedXml()));
         reader.ReadToFollowing(
             ElementNames.DecisionNotification.LocalName,
             ElementNames.DecisionNotification.NamespaceName
