@@ -11,7 +11,7 @@ public class MongoCollectionSet<T>(MongoDbContext dbContext, string collectionNa
     where T : class, IDataEntity
 {
     private readonly IMongoCollection<T> _collection = string.IsNullOrEmpty(collectionName)
-        ? dbContext.Database.GetCollection<T>(typeof(T).Name)
+        ? dbContext.Database.GetCollection<T>(typeof(T).Name.Replace("Entity", ""))
         : dbContext.Database.GetCollection<T>(collectionName);
 
     private readonly List<T> _entitiesToInsert = [];
