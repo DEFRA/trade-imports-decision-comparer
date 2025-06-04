@@ -66,7 +66,7 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
     builder.Services.AddHealthChecks();
     builder.Services.AddHealth(builder.Configuration);
     builder.Services.AddHttpClient();
-    builder.Services.AddDbContext(builder.Configuration);
+    builder.Services.AddDbContext(builder.Configuration, integrationTest);
     builder.Services.AddAuthenticationAuthorization();
     builder.Services.AddConsumers(builder.Configuration);
 
