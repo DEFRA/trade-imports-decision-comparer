@@ -12,4 +12,6 @@ public class FinalisationsConsumerOptions
     // This is only turned off in appsettings.IntegrationTests.json currently
     // as we don't want the consumers running for in memory integration tests.
     public required bool Enabled { get; init; } = true;
+
+    public int ConsumersPerHost { get; init; } = 20;
 }
