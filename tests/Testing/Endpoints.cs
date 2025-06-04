@@ -64,15 +64,15 @@ public static class Endpoints
 
             if (start.HasValue)
             {
-                queryString.Add(nameof(start), start.Value.ToString(CultureInfo.InvariantCulture));
+                queryString = queryString.Add(nameof(start), start.Value.ToString("O", CultureInfo.InvariantCulture));
             }
 
             if (end.HasValue)
             {
-                queryString.Add(nameof(end), end.Value.ToString(CultureInfo.InvariantCulture));
+                queryString = queryString.Add(nameof(end), end.Value.ToString("O", CultureInfo.InvariantCulture));
             }
 
-            return $"{Root}?{queryString.Value}";
+            return $"{Root}{queryString.Value}";
         }
     }
 }
