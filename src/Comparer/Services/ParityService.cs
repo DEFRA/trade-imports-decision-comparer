@@ -26,12 +26,17 @@ public class ParityService(IDbContext dbContext) : IParityService
         var countQuery =
             from c in query
             group c by c.Latest.Match.ToString() into grp
-            select new KeyValuePair<string, int>(grp.Key, grp.Count());
+            select new { grp.Key, Count = grp.Count() };
 
         var misMatchMrnQuery = from c in query where c.Latest.Match == ComparisionOutcome.Mismatch select c.Id;
 
         return new ParityProjection(
-            new(await countQuery.ToListAsync(cancellationToken)),
+            new Dictionary<string, int>(
+                (await countQuery.ToListAsync(cancellationToken)).Select(x => new KeyValuePair<string, int>(
+                    x.Key,
+                    x.Count
+                ))
+            ),
             await misMatchMrnQuery.ToListAsync(cancellationToken)
         );
     }
