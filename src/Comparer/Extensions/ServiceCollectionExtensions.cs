@@ -37,7 +37,11 @@ public static class ServiceCollectionExtensions
                     mbb.AddJsonSerializer();
 
                     mbb.AddServicesFromAssemblyContaining<FinalisationsConsumer>();
-                    mbb.Consume<JsonElement>(x => x.WithConsumer<FinalisationsConsumer>().Queue(options.QueueName));
+                    mbb.Consume<JsonElement>(x =>
+                        x.WithConsumer<FinalisationsConsumer>()
+                            .Queue(options.QueueName)
+                            .Instances(options.ConsumersPerHost)
+                    );
                 }
             );
         });
