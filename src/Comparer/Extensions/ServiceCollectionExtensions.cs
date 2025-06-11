@@ -20,6 +20,10 @@ public static class ServiceCollectionExtensions
         if (!options.Enabled)
             return services;
 
+        // Order or interceptors is important here
+        services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(TraceContextInterceptor<>));
+        services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(LoggingInterceptor<>));
+
         services.AddSlimMessageBus(smb =>
         {
             smb.AddChildBus(
@@ -35,7 +39,6 @@ public static class ServiceCollectionExtensions
                         );
                     });
                     mbb.AddJsonSerializer();
-
                     mbb.AddServicesFromAssemblyContaining<FinalisationsConsumer>();
                     mbb.Consume<JsonElement>(x =>
                         x.WithConsumer<FinalisationsConsumer>()
@@ -45,14 +48,6 @@ public static class ServiceCollectionExtensions
                 }
             );
         });
-
-        return services;
-    }
-
-    public static IServiceCollection AddTracingForConsumers(this IServiceCollection services)
-    {
-        services.AddScoped(typeof(IConsumerInterceptor<>), typeof(TraceContextInterceptor<>));
-        services.AddSingleton(typeof(ISqsConsumerErrorHandler<>), typeof(SerilogTraceErrorHandler<>));
 
         return services;
     }
