@@ -10,10 +10,13 @@ using Defra.TradeImportsDecisionComparer.Comparer.Health;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
+using Elastic.CommonSchema.Serilog;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.Http.Resilience;
+using Polly;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
+Log.Logger = new LoggerConfiguration().WriteTo.Console(new EcsTextFormatter()).CreateBootstrapLogger();
 
 try
 {
@@ -55,13 +58,34 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
         options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-    // Load certificates into Trust Store - Note must happen before Mongo and Http client connections
+    // Must happen before Mongo and Http client connections
     builder.Services.AddCustomTrustStore();
 
     builder.ConfigureLoggingAndTracing(integrationTest);
 
-    // This adds default rate limiter, total request timeout, retries, circuit breaker and timeout per attempt
-    builder.Services.ConfigureHttpClientDefaults(options => options.AddStandardResilienceHandler());
+    builder.Services.ConfigureHttpClientDefaults(options =>
+    {
+        var resilienceOptions = new HttpStandardResilienceOptions { Retry = { UseJitter = true } };
+        resilienceOptions.Retry.DisableForUnsafeHttpMethods();
+
+        options.ConfigureHttpClient(c =>
+        {
+            // Disable the HttpClient timeout to allow the resilient pipeline below
+            // to handle all timeouts
+            c.Timeout = Timeout.InfiniteTimeSpan;
+        });
+
+        options.AddResilienceHandler(
+            "All",
+            builder =>
+            {
+                builder
+                    .AddTimeout(resilienceOptions.TotalRequestTimeout)
+                    .AddRetry(resilienceOptions.Retry)
+                    .AddTimeout(resilienceOptions.AttemptTimeout);
+            }
+        );
+    });
     builder.Services.AddProblemDetails();
     builder.Services.AddHealthChecks();
     builder.Services.AddHealth(builder.Configuration);

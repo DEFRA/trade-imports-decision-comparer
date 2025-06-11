@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Defra.TradeImportsDecisionComparer.Comparer.Configuration;
 using Defra.TradeImportsDecisionComparer.Comparer.Consumers;
-using Defra.TradeImportsDecisionComparer.Comparer.Interceptors;
 using Defra.TradeImportsDecisionComparer.Comparer.Metrics;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
 using SlimMessageBus.Host;
@@ -22,10 +21,12 @@ public static class ServiceCollectionExtensions
         if (!options.Enabled)
             return services;
 
+        // Order of interceptors is important here
+        services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(TraceContextInterceptor<>));
+        services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(LoggingInterceptor<>));
         services.AddSingleton<ConsumerMetrics>();
         services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(MetricsInterceptor<>));
-        services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(TracingInterceptor<>));
-        services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(LoggingInterceptor<>));
+
         services.AddSlimMessageBus(smb =>
         {
             smb.AddChildBus(
@@ -41,7 +42,6 @@ public static class ServiceCollectionExtensions
                         );
                     });
                     mbb.AddJsonSerializer();
-
                     mbb.AddServicesFromAssemblyContaining<FinalisationsConsumer>();
                     mbb.Consume<JsonElement>(x =>
                         x.WithConsumer<FinalisationsConsumer>()
@@ -51,14 +51,6 @@ public static class ServiceCollectionExtensions
                 }
             );
         });
-
-        return services;
-    }
-
-    public static IServiceCollection AddTracingForConsumers(this IServiceCollection services)
-    {
-        services.AddScoped(typeof(IConsumerInterceptor<>), typeof(TraceContextInterceptor<>));
-        services.AddSingleton(typeof(ISqsConsumerErrorHandler<>), typeof(SerilogTraceErrorHandler<>));
 
         return services;
     }

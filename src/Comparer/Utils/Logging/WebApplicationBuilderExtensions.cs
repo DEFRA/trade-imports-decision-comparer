@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
-using Defra.TradeImportsDecisionComparer.Comparer.Extensions;
 using Elastic.Serilog.Enrichers.Web;
 using Microsoft.AspNetCore.HeaderPropagation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Serilog.Events;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
 
@@ -20,7 +20,6 @@ public static class WebApplicationBuilderExtensions
             .Bind(builder.Configuration)
             .ValidateDataAnnotations()
             .ValidateOnStart();
-        builder.Services.AddTracingForConsumers();
 
         // Replaces use of AddHeaderPropagation so we can configure outside startup
         // and use the TraceHeader options configured above that will have been validated
@@ -59,7 +58,19 @@ public static class WebApplicationBuilderExtensions
             .Enrich.WithEcsHttpContext(httpAccessor)
             .Enrich.FromLogContext()
             .Enrich.With(new TraceContextEnricher())
-            .Enrich.WithCorrelationId(traceHeader.Name);
+            .Enrich.WithCorrelationId(traceHeader.Name)
+            .Filter.ByExcluding(x =>
+                x.Level == LogEventLevel.Information
+                && x.Properties.TryGetValue("RequestPath", out var path)
+                && path.ToString().Contains("/health")
+                && !x.MessageTemplate.Text.StartsWith("Request finished")
+            )
+            .Filter.ByExcluding(x =>
+                x.Level == LogEventLevel.Error
+                && x.Properties.TryGetValue("SourceContext", out var sourceContext)
+                && sourceContext.ToString().Contains("SlimMessageBus.Host.AmazonSQS.SqsQueueConsumer")
+                && x.MessageTemplate.Text.StartsWith("Message processing error")
+            );
 
         if (!string.IsNullOrWhiteSpace(serviceVersion))
             config.Enrich.WithProperty("service.version", serviceVersion);
