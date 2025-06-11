@@ -99,6 +99,9 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
     builder.Services.AddTransient<IOutboundErrorService, OutboundErrorService>();
     builder.Services.AddTransient<IDecisionService, DecisionService>();
     builder.Services.AddTransient<IComparisonService, ComparisonService>();
+
+    builder.Services.AddTransient<MetricsMiddleware>();
+    builder.Services.AddSingleton<RequestMetrics>();
 }
 
 static WebApplication BuildWebApplication(WebApplicationBuilder builder)
@@ -110,6 +113,7 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
     app.UseHeaderPropagation();
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseMiddleware<MetricsMiddleware>();
     app.MapHealth();
     app.MapDecisionEndpoints(isDevelopment);
     app.MapOutboundErrorsEndpoints(isDevelopment);
