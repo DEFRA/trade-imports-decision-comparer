@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Defra.TradeImportsDecisionComparer.Comparer.Configuration;
 using Defra.TradeImportsDecisionComparer.Comparer.Consumers;
+using Defra.TradeImportsDecisionComparer.Comparer.Interceptors;
+using Defra.TradeImportsDecisionComparer.Comparer.Metrics;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
 using SlimMessageBus.Host;
 using SlimMessageBus.Host.AmazonSQS;
@@ -20,6 +22,10 @@ public static class ServiceCollectionExtensions
         if (!options.Enabled)
             return services;
 
+        services.AddSingleton<ConsumerMetrics>();
+        services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(MetricsInterceptor<>));
+        services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(TracingInterceptor<>));
+        services.AddSingleton(typeof(IConsumerInterceptor<>), typeof(LoggingInterceptor<>));
         services.AddSlimMessageBus(smb =>
         {
             smb.AddChildBus(
