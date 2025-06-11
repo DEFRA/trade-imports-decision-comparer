@@ -7,6 +7,7 @@ using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.OutboundErrors;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Parity;
 using Defra.TradeImportsDecisionComparer.Comparer.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Health;
+using Defra.TradeImportsDecisionComparer.Comparer.Metrics;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
@@ -105,6 +106,7 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
     var app = builder.Build();
     var isDevelopment = app.Environment.IsDevelopment();
 
+    app.UseEmfExporter();
     app.UseHeaderPropagation();
     app.UseAuthentication();
     app.UseAuthorization();
