@@ -8,6 +8,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "AWS_ACCESS_KEY_ID": "test",
+        "AWS_EMF_ENVIRONMENT": "Local",
         "AWS_REGION": "eu-west-2",
         "AWS_SECRET_ACCESS_KEY": "test",
         "ENVIRONMENT": "local",
