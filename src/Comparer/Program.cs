@@ -10,12 +10,13 @@ using Defra.TradeImportsDecisionComparer.Comparer.Health;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
+using Elastic.CommonSchema.Serilog;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Http.Resilience;
 using Polly;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
+Log.Logger = new LoggerConfiguration().WriteTo.Console(new EcsTextFormatter()).CreateBootstrapLogger();
 
 try
 {
