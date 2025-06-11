@@ -23,7 +23,7 @@ public class FinalisationsConsumer(
             received.Deserialize<ResourceEvent<CustomsDeclaration>>()
             ?? throw new InvalidOperationException("Could not deserialize resource event");
 
-        logger.LogInformation("Handling finalisation for {ResourceId}", message.ResourceId);
+        logger.LogInformation("Received finalisation for {ResourceId}", message.ResourceId);
 
         var alvsDecision = await decisionService.GetAlvsDecision(message.ResourceId, cancellationToken);
         var btmsDecision = await decisionService.GetBtmsDecision(message.ResourceId, cancellationToken);
