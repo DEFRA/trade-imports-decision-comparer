@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.HeaderPropagation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Serilog.Events;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
 
@@ -59,7 +60,13 @@ public static class WebApplicationBuilderExtensions
             .Enrich.WithEcsHttpContext(httpAccessor)
             .Enrich.FromLogContext()
             .Enrich.With(new TraceContextEnricher())
-            .Enrich.WithCorrelationId(traceHeader.Name);
+            .Enrich.WithCorrelationId(traceHeader.Name)
+            .Filter.ByExcluding(x =>
+                x.Level == LogEventLevel.Information
+                && x.Properties.TryGetValue("RequestPath", out var path)
+                && path.ToString().Contains("/health")
+                && !x.MessageTemplate.Text.StartsWith("Request finished")
+            );
 
         if (!string.IsNullOrWhiteSpace(serviceVersion))
             config.Enrich.WithProperty("service.version", serviceVersion);
