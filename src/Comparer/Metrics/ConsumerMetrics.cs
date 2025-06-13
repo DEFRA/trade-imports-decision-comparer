@@ -11,11 +11,13 @@ public class ConsumerMetrics
     private readonly Histogram<double> _consumeDuration;
     private readonly Counter<long> _consumeTotal;
     private readonly Counter<long> _consumeFaultTotal;
+    private readonly Counter<long> _consumeWarnTotal;
     private readonly Counter<long> _consumerInProgress;
 
     public ConsumerMetrics(IMeterFactory meterFactory)
     {
         var meter = meterFactory.Create(MetricsConstants.MetricNames.MeterName);
+
         _consumeTotal = meter.CreateCounter<long>(
             "MessagingConsume",
             nameof(Unit.COUNT),
@@ -25,6 +27,11 @@ public class ConsumerMetrics
             "MessagingConsumeErrors",
             nameof(Unit.COUNT),
             description: "Number of message consume faults"
+        );
+        _consumeWarnTotal = meter.CreateCounter<long>(
+            "MessagingConsumeWarnings",
+            nameof(Unit.COUNT),
+            description: "Number of message consume warnings"
         );
         _consumerInProgress = meter.CreateCounter<long>(
             "MessagingConsumeActive",
@@ -58,6 +65,20 @@ public class ConsumerMetrics
 
         tagList.Add(Constants.Tags.ExceptionType, exception.GetType().Name);
         _consumeFaultTotal.Add(1, tagList);
+    }
+
+    public void Warn(
+        string queueName,
+        string consumerName,
+        string resourceType,
+        string? subResourceType,
+        Exception exception
+    )
+    {
+        var tagList = BuildTags(queueName, consumerName, resourceType, subResourceType);
+
+        tagList.Add(Constants.Tags.ExceptionType, exception.GetType().Name);
+        _consumeWarnTotal.Add(1, tagList);
     }
 
     public void Complete(
