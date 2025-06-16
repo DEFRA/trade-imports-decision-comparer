@@ -1,6 +1,6 @@
 # Trade Imports Decision Comparer
 
-The Trade Imports Decision Comparer is a .NET application which subscribes to the Trade Import Api Events, and also recieved messages via HTTP
+The Trade Imports Decision Comparer is a .NET application which subscribes to the Trade Import Api Events, and also recieves messages via HTTP
 
 When Finalisation events are recieved the comparer will compare the ALVS and BTMS generate a comparision.
 
@@ -95,7 +95,7 @@ This filtering happens on the SQS/SNS subscription.
 
 ### Tracing
 The out of the box CDP template doesn't provide any example of how to handle tracing for non Http communication.
-This service expected the trace.id to be a header on the message, and it will use that and propagate that to the Trade Imports Api via Http Requests.
+This service expects the trace.id to be a header on the message, which it will propagate that to the Trade Imports Api via Http Requests.
 
 Getting the trace.id header is achieved via a SMB `TraceContextInterceptor`
 Making sure that trace.id is then used in log messages is achieved via `TraceContextEnricher`
