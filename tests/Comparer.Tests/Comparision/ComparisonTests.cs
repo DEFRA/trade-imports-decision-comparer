@@ -15,4 +15,20 @@ public class ComparisonTests
 
         result.Match.Should().Be(ComparisionOutcome.ExactMatch);
     }
+
+    [Fact]
+    public void WhenNoBtmsDecisionThenShouldReturnNoBtmsDecision()
+    {
+        var result = Comparison.Create(sampleDecision, null);
+
+        result.Match.Should().Be(ComparisionOutcome.NoBtmsDecision);
+    }
+
+    [Fact]
+    public void WhenNoAlvsDecisionThenShouldReturnNoAlvsDecision()
+    {
+        var result = Comparison.Create(null, sampleDecision);
+
+        result.Match.Should().Be(ComparisionOutcome.NoAlvsDecision);
+    }
 }

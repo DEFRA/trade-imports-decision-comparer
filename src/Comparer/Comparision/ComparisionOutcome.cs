@@ -7,6 +7,8 @@ public enum ComparisionOutcome
     ExactMatch = 1,
     GroupMatch = 2,
     Mismatch = 3,
+    NoAlvsDecision = 4,
+    NoBtmsDecision = 5,
 }
 
 public record ComparisionOutcomeEvaluatorContext(List<Item> AlvsItems, List<Item> BtmsItems);
@@ -15,6 +17,16 @@ public static class ComparisionOutcomeEvaluator
 {
     public static ComparisionOutcome GetComparisionOutcome(this ComparisionOutcomeEvaluatorContext context)
     {
+        if (context.BtmsItems.Count == 0)
+        {
+            return ComparisionOutcome.NoBtmsDecision;
+        }
+
+        if (context.AlvsItems.Count == 0)
+        {
+            return ComparisionOutcome.NoAlvsDecision;
+        }
+
         return context.BtmsItems.Compare(context.AlvsItems);
     }
 }
