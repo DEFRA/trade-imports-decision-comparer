@@ -17,12 +17,12 @@ public static class ComparisionOutcomeEvaluator
 {
     public static ComparisionOutcome GetComparisionOutcome(this ComparisionOutcomeEvaluatorContext context)
     {
-        if (!context.BtmsItems.Any())
+        if (context.BtmsItems.Count == 0)
         {
             return ComparisionOutcome.NoBtmsDecision;
         }
 
-        if (!context.AlvsItems.Any())
+        if (context.AlvsItems.Count == 0)
         {
             return ComparisionOutcome.NoAlvsDecision;
         }
