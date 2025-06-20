@@ -4,6 +4,7 @@ using Defra.TradeImportsDataApi.Domain.CustomsDeclaration;
 using Defra.TradeImportsDataApi.Domain.Events;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 using Defra.TradeImportsDecisionComparer.Comparer.Entities;
+using Defra.TradeImportsDecisionComparer.Comparer.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using SlimMessageBus;
 
@@ -27,8 +28,8 @@ public class FinalisationsConsumer(
 
         var alvsDecision = await decisionService.GetAlvsDecision(message.ResourceId, cancellationToken);
         var btmsDecision = await decisionService.GetBtmsDecision(message.ResourceId, cancellationToken);
-        var latestAlvs = alvsDecision?.Decisions.LastOrDefault();
-        var latestBtms = btmsDecision?.Decisions.LastOrDefault();
+        var latestAlvs = alvsDecision?.Decisions.OrderBy(x => x.Xml.GetDecisionNumber()).LastOrDefault();
+        var latestBtms = btmsDecision?.Decisions.OrderBy(x => x.Xml.GetDecisionNumber()).LastOrDefault();
 
         var comparison = Comparison.Create(latestAlvs?.Xml, latestBtms?.Xml);
         var comparisonEntity = await comparisonService.Get(message.ResourceId, cancellationToken);
