@@ -44,7 +44,7 @@ public static class ElementExtensions
             .Descendants(ElementNames.DecisionNumber)
             .FirstOrDefault();
         if (decisionNumberElement?.Value != null)
-            return Int32.Parse(decisionNumberElement?.Value!);
+            return Int32.Parse(decisionNumberElement.Value);
 
         return 0;
     }
