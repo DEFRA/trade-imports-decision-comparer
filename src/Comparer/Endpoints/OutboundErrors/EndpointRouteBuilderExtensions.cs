@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Defra.TradeImportsDecisionComparer.Comparer.Authentication;
+using Defra.TradeImportsDecisionComparer.Comparer.Data;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -78,7 +79,14 @@ public static class EndpointRouteBuilderExtensions
         using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
         var xml = await reader.ReadToEndAsync(cancellationToken);
 
-        await save(new OutboundError(DateTime.UtcNow, xml), cancellationToken);
+        try
+        {
+            await save(new OutboundError(DateTime.UtcNow, xml), cancellationToken);
+        }
+        catch (ConcurrencyException)
+        {
+            return Results.Conflict();
+        }
 
         return Results.Ok();
     }
