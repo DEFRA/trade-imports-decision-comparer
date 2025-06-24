@@ -32,6 +32,15 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
             ResourceType = "CustomsDeclaration",
             SubResourceType = "Finalisation",
             Operation = "Update",
+            Resource = new CustomsDeclaration()
+            {
+                Finalisation = new Finalisation()
+                {
+                    FinalState = "3",
+                    ExternalVersion = 1,
+                    IsManualRelease = false,
+                },
+            },
         };
         await DrainAllMessages();
         await SendMessage(JsonSerializer.Serialize(message));
@@ -79,6 +88,15 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
             ResourceType = "CustomsDeclaration",
             SubResourceType = "Finalisation",
             Operation = "Update",
+            Resource = new CustomsDeclaration()
+            {
+                Finalisation = new Finalisation()
+                {
+                    FinalState = "3",
+                    ExternalVersion = 1,
+                    IsManualRelease = false,
+                },
+            },
         };
         await DrainAllMessages();
         await SendMessage(JsonSerializer.Serialize(message));
@@ -113,6 +131,15 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
             ResourceType = "CustomsDeclaration",
             SubResourceType = "Finalisation",
             Operation = "Update",
+            Resource = new CustomsDeclaration()
+            {
+                Finalisation = new Finalisation()
+                {
+                    FinalState = "3",
+                    ExternalVersion = 1,
+                    IsManualRelease = false,
+                },
+            },
         };
         await DrainAllMessages();
         await SendMessage(JsonSerializer.Serialize(message));

@@ -26,12 +26,14 @@ public class FinalisationsConsumer(
 
         logger.LogInformation("Received finalisation for {ResourceId}", message.ResourceId);
 
+        var finalisation = message.Resource?.Finalisation;
+
         var alvsDecision = await decisionService.GetAlvsDecision(message.ResourceId, cancellationToken);
         var btmsDecision = await decisionService.GetBtmsDecision(message.ResourceId, cancellationToken);
         var latestAlvs = alvsDecision?.Decisions.OrderBy(x => x.Xml.GetDecisionNumber()).LastOrDefault();
         var latestBtms = btmsDecision?.Decisions.OrderBy(x => x.Xml.GetDecisionNumber()).LastOrDefault();
 
-        var comparison = Comparison.Create(latestAlvs?.Xml, latestBtms?.Xml);
+        var comparison = Comparison.Create(latestAlvs?.Xml, latestBtms?.Xml, finalisation!);
         var comparisonEntity = await comparisonService.Get(message.ResourceId, cancellationToken);
 
         if (comparisonEntity is null)
