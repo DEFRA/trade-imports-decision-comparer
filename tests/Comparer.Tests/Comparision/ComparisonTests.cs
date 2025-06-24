@@ -1,3 +1,4 @@
+using Defra.TradeImportsDataApi.Domain.CustomsDeclaration;
 using Defra.TradeImportsDecisionComparer.Comparer.Comparision;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 
@@ -11,7 +12,16 @@ public class ComparisonTests
     [Fact]
     public void WhenDecisionAreTheSameThenShouldReturnExactMatch()
     {
-        var result = Comparison.Create(sampleDecision, sampleDecision);
+        var result = Comparison.Create(
+            sampleDecision,
+            sampleDecision,
+            new Finalisation()
+            {
+                FinalState = "3",
+                ExternalVersion = 1,
+                IsManualRelease = false,
+            }
+        );
 
         result.Match.Should().Be(ComparisionOutcome.ExactMatch);
     }
@@ -19,7 +29,16 @@ public class ComparisonTests
     [Fact]
     public void WhenNoBtmsDecisionThenShouldReturnNoBtmsDecision()
     {
-        var result = Comparison.Create(sampleDecision, null);
+        var result = Comparison.Create(
+            sampleDecision,
+            null,
+            new Finalisation()
+            {
+                FinalState = "3",
+                ExternalVersion = 1,
+                IsManualRelease = false,
+            }
+        );
 
         result.Match.Should().Be(ComparisionOutcome.NoBtmsDecision);
     }
@@ -27,8 +46,34 @@ public class ComparisonTests
     [Fact]
     public void WhenNoAlvsDecisionThenShouldReturnNoAlvsDecision()
     {
-        var result = Comparison.Create(null, sampleDecision);
+        var result = Comparison.Create(
+            null,
+            sampleDecision,
+            new Finalisation()
+            {
+                FinalState = "3",
+                ExternalVersion = 1,
+                IsManualRelease = false,
+            }
+        );
 
         result.Match.Should().Be(ComparisionOutcome.NoAlvsDecision);
+    }
+
+    [Fact]
+    public void WhenMrnIsCancelledThenShouldReturnCanceledMrn()
+    {
+        var result = Comparison.Create(
+            sampleDecision,
+            sampleDecision,
+            new Finalisation()
+            {
+                FinalState = "1",
+                ExternalVersion = 1,
+                IsManualRelease = false,
+            }
+        );
+
+        result.Match.Should().Be(ComparisionOutcome.ExactMatch);
     }
 }
