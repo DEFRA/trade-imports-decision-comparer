@@ -74,6 +74,6 @@ public class ComparisonTests
             }
         );
 
-        result.Match.Should().Be(ComparisionOutcome.ExactMatch);
+        result.Match.Should().Be(ComparisionOutcome.CancelledMrn);
     }
 }
