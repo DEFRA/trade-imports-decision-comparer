@@ -1,7 +1,10 @@
 using System.Net;
+using Defra.TradeImportsDecisionComparer.Comparer.Data;
+using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Xunit.Abstractions;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.OutboundErrors;
@@ -10,13 +13,13 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     : EndpointTestBase(factory, outputHelper)
 {
     private const string Mrn = "mrn";
-    private IOutboundErrorService MockOutboundErrorServiceService { get; } = Substitute.For<IOutboundErrorService>();
+    private IOutboundErrorService MockOutboundErrorService { get; } = Substitute.For<IOutboundErrorService>();
 
     protected override void ConfigureTestServices(IServiceCollection services)
     {
         base.ConfigureTestServices(services);
 
-        services.AddTransient<IOutboundErrorService>(_ => MockOutboundErrorServiceService);
+        services.AddTransient<IOutboundErrorService>(_ => MockOutboundErrorService);
     }
 
     [Fact]
@@ -62,6 +65,22 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     }
 
     [Fact]
+    public async Task PutAlvs_WhenConcurrencyException_ShouldBeConflict()
+    {
+        var client = CreateClient();
+        MockOutboundErrorService
+            .AppendAlvsOutboundError(Mrn, Arg.Any<OutboundError>(), Arg.Any<CancellationToken>())
+            .Throws(new ConcurrencyException(Mrn, "etag"));
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.OutboundErrors.Alvs.Put(Mrn),
+            new StringContent("<xml alvs=\"true\" />")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
     public async Task PutBtms_WhenUnauthorized_ShouldBeUnauthorized()
     {
         var client = CreateClient(addDefaultAuthorizationHeader: false);
@@ -101,5 +120,21 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
         var content = await response.Content.ReadAsStringAsync();
 
         await Verify(content);
+    }
+
+    [Fact]
+    public async Task PutBtms_WhenConcurrencyException_ShouldBeConflict()
+    {
+        var client = CreateClient();
+        MockOutboundErrorService
+            .AppendBtmsOutboundError(Mrn, Arg.Any<OutboundError>(), Arg.Any<CancellationToken>())
+            .Throws(new ConcurrencyException(Mrn, "etag"));
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.OutboundErrors.Btms.Put(Mrn),
+            new StringContent("<xml alvs=\"true\" />")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 }
