@@ -68,8 +68,6 @@ public static class EndpointRouteBuilderExtensions
     }
 
     [SuppressMessage("SonarLint", "S5131", Justification = "This service cannot be compromised by a malicious user")]
-    [SuppressMessage("SonarLint", "S1481", Justification = "Just testing for now")]
-    [SuppressMessage("SonarLint", "S125", Justification = "Just testing for now")]
     private static async Task<IResult> ReadAndSave(
         HttpContext context,
         Func<OutboundError, CancellationToken, Task> save,
@@ -83,13 +81,13 @@ public static class EndpointRouteBuilderExtensions
 
         try
         {
-            // await save(new OutboundError(DateTime.UtcNow, xml), cancellationToken);
+            await save(new OutboundError(DateTime.UtcNow, xml), cancellationToken);
         }
         catch (ConcurrencyException)
         {
             return Results.Conflict();
         }
 
-        return Results.Conflict();
+        return Results.Ok();
     }
 }

@@ -25,7 +25,7 @@ public class OutboundErrorTests : IntegrationTestBase
         result.AlvsOutboundError.Should().BeNull();
     }
 
-    [Fact(Skip = "Temporarily disabled to create a test build")]
+    [Fact]
     public async Task WhenAlvsDecisions_ShouldReturnResults()
     {
         var client = CreateClient();
@@ -63,7 +63,7 @@ public class OutboundErrorTests : IntegrationTestBase
         result.BtmsOutboundError.Should().BeNull();
     }
 
-    [Fact(Skip = "Temporarily disabled to create a test build")]
+    [Fact]
     public async Task WhenBtmsDecisions_ShouldReturnResults()
     {
         var client = CreateClient();

@@ -64,7 +64,7 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
         );
     }
 
-    [Fact(Skip = "Temporarily disabled to create a test build")]
+    [Fact]
     public async Task WhenFinalised_AndExistingDecisions()
     {
         var client = CreateClient();
