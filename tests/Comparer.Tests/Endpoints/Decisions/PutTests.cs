@@ -42,7 +42,7 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact(Skip = "Temporarily disabled to create a test build")]
+    [Fact]
     public async Task PutAlvs_WhenValid_ShouldBeRequestBodyAsResponse()
     {
         var client = CreateClient();
@@ -94,7 +94,7 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact(Skip = "Temporarily disabled to create a test build")]
+    [Fact]
     public async Task PutBtms_WhenValid_ShouldBeRequestBodyAsResponse()
     {
         var client = CreateClient();

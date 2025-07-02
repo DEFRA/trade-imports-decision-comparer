@@ -42,7 +42,7 @@ public class ParityTests(ITestOutputHelper output) : SqsTestBase(output)
         result.Stats.Should().BeNullOrEmpty();
     }
 
-    [Fact(Skip = "Temporarily disabled to create a test build")]
+    [Fact]
     public async Task WhenParityExists_ShouldReturnResults()
     {
         await DrainAllMessages();
