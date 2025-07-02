@@ -57,8 +57,7 @@ public static class EndpointRouteBuilderExtensions
 
         return Results.Ok(new { alvsDecision, btmsDecision });
     }
-
-    [SuppressMessage("SonarLint", "S5131", Justification = "This service cannot be compromised by a malicious user")]
+    
     private static async Task<IResult> ReadAndSave(
         HttpContext context,
         Func<Decision, CancellationToken, Task> save,
