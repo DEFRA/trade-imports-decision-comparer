@@ -57,7 +57,7 @@ public static class EndpointRouteBuilderExtensions
 
         return Results.Ok(new { alvsDecision, btmsDecision });
     }
-    
+
     private static async Task<IResult> ReadAndSave(
         HttpContext context,
         Func<Decision, CancellationToken, Task> save,
