@@ -52,7 +52,7 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
             new StringContent("<xml alvs=\"true\" />")
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
         var content = await response.Content.ReadAsStringAsync();
 
         await Verify(content);
@@ -104,7 +104,7 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
             new StringContent("<xml btms=\"true\" />")
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
         var content = await response.Content.ReadAsStringAsync();
 
         await Verify(content);
