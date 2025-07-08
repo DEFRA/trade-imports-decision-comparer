@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Xunit.Abstractions;
 
-namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.Comparisons;
+namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.Decisions;
 
-public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
+public class ComparisonTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : EndpointTestBase(factory, outputHelper)
 {
     private const string Mrn = "mrn";
@@ -27,7 +27,7 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     {
         var client = CreateClient(addDefaultAuthorizationHeader: false);
 
-        var response = await client.GetAsync(Testing.Endpoints.Comparisons.Get(Mrn));
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Comparison(Mrn));
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -37,7 +37,7 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     {
         var client = CreateClient(testUser: TestUser.WriteOnly);
 
-        var response = await client.GetAsync(Testing.Endpoints.Comparisons.Get(Mrn));
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Comparison(Mrn));
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -68,7 +68,7 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
                 }
             );
 
-        var response = await client.GetAsync(Testing.Endpoints.Comparisons.Get(Mrn));
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Comparison(Mrn));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 

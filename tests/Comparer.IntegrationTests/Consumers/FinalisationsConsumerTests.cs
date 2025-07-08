@@ -32,9 +32,9 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
             ResourceType = "CustomsDeclaration",
             SubResourceType = "Finalisation",
             Operation = "Update",
-            Resource = new CustomsDeclaration()
+            Resource = new CustomsDeclaration
             {
-                Finalisation = new Finalisation()
+                Finalisation = new Finalisation
                 {
                     FinalState = "3",
                     ExternalVersion = 1,
@@ -48,7 +48,7 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
         Assert.True(
             await AsyncWaiter.WaitForAsync(async () =>
             {
-                var response = await client.GetAsync($"/comparisons/{mrn}");
+                var response = await client.GetAsync(Testing.Endpoints.Decisions.Comparison(mrn));
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
 
                 var content = await response.Content.ReadAsStringAsync();
@@ -88,9 +88,9 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
             ResourceType = "CustomsDeclaration",
             SubResourceType = "Finalisation",
             Operation = "Update",
-            Resource = new CustomsDeclaration()
+            Resource = new CustomsDeclaration
             {
-                Finalisation = new Finalisation()
+                Finalisation = new Finalisation
                 {
                     FinalState = "3",
                     ExternalVersion = 1,
@@ -104,7 +104,7 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
         Assert.True(
             await AsyncWaiter.WaitForAsync(async () =>
             {
-                response = await client.GetAsync($"/comparisons/{mrn}");
+                response = await client.GetAsync(Testing.Endpoints.Decisions.Comparison(mrn));
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
 
                 var content = await response.Content.ReadAsStringAsync();
@@ -131,9 +131,9 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
             ResourceType = "CustomsDeclaration",
             SubResourceType = "Finalisation",
             Operation = "Update",
-            Resource = new CustomsDeclaration()
+            Resource = new CustomsDeclaration
             {
-                Finalisation = new Finalisation()
+                Finalisation = new Finalisation
                 {
                     FinalState = "3",
                     ExternalVersion = 1,
@@ -147,7 +147,7 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
         Assert.True(
             await AsyncWaiter.WaitForAsync(async () =>
             {
-                response = await client.GetAsync($"/comparisons/{mrn}");
+                response = await client.GetAsync(Testing.Endpoints.Decisions.Comparison(mrn));
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
 
                 var content = await response.Content.ReadAsStringAsync();

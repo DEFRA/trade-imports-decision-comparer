@@ -15,7 +15,7 @@ public class ComparisonTests
         var result = Comparison.Create(
             SampleDecision,
             SampleDecision,
-            new Finalisation()
+            new Finalisation
             {
                 FinalState = "3",
                 ExternalVersion = 1,
@@ -32,7 +32,7 @@ public class ComparisonTests
         var result = Comparison.Create(
             SampleDecision,
             null,
-            new Finalisation()
+            new Finalisation
             {
                 FinalState = "3",
                 ExternalVersion = 1,
@@ -49,7 +49,7 @@ public class ComparisonTests
         var result = Comparison.Create(
             null,
             SampleDecision,
-            new Finalisation()
+            new Finalisation
             {
                 FinalState = "3",
                 ExternalVersion = 1,
@@ -66,7 +66,7 @@ public class ComparisonTests
         var result = Comparison.Create(
             SampleDecision,
             SampleDecision,
-            new Finalisation()
+            new Finalisation
             {
                 FinalState = "1",
                 ExternalVersion = 1,

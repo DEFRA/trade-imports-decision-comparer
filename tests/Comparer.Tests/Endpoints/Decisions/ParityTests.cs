@@ -1,16 +1,14 @@
 using System.Net;
 using Defra.TradeImportsDecisionComparer.Comparer.Comparision;
-using Defra.TradeImportsDecisionComparer.Comparer.Domain;
-using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 using Defra.TradeImportsDecisionComparer.Comparer.Projections;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Xunit.Abstractions;
 
-namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.Parity;
+namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.Decisions;
 
-public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
+public class ParityTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : EndpointTestBase(factory, outputHelper)
 {
     private const string Mrn = "mrn";
@@ -28,7 +26,7 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     {
         var client = CreateClient(addDefaultAuthorizationHeader: false);
 
-        var response = await client.GetAsync(Testing.Endpoints.Parity.Get(null, null));
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(null, null));
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -38,7 +36,7 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     {
         var client = CreateClient(testUser: TestUser.WriteOnly);
 
-        var response = await client.GetAsync(Testing.Endpoints.Parity.Get(null, null));
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(null, null));
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -50,13 +48,10 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
         MockParityService
             .Get(null, null, Arg.Any<CancellationToken>())
             .Returns(
-                new ParityProjection(
-                    new Dictionary<string, int>() { { nameof(ComparisionOutcome.Mismatch), 3 } },
-                    [Mrn]
-                )
+                new ParityProjection(new Dictionary<string, int> { { nameof(ComparisionOutcome.Mismatch), 3 } }, [Mrn])
             );
 
-        var response = await client.GetAsync(Testing.Endpoints.Parity.Get(null, null));
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(null, null));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
