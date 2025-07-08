@@ -56,6 +56,8 @@ public static class Endpoints
 
         public static string Get(string mrn) => $"{Root()}/{mrn}";
 
+        public static string Comparison(string mrn) => $"{Get(mrn)}/comparison";
+
         public static class Alvs
         {
             private static string AlvsPrefix => nameof(Alvs).ToLower() + "-";

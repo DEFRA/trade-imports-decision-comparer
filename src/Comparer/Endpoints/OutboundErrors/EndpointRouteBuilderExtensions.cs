@@ -14,6 +14,7 @@ public static class EndpointRouteBuilderExtensions
         app.MapPut("alvs-outbound-errors/{mrn}/", PutAlvs).RequireAuthorization(PolicyNames.Write);
         app.MapPut("btms-outbound-errors/{mrn}/", PutBtms).RequireAuthorization(PolicyNames.Write);
         app.MapGet("outbound-errors/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
+        app.MapGet("outbound-errors/{mrn}/comparison", GetComparison).RequireAuthorization(PolicyNames.Read);
     }
 
     [HttpPut]
@@ -53,6 +54,18 @@ public static class EndpointRouteBuilderExtensions
         var btmsOutboundError = await outboundErrorService.GetBtmsOutboundError(mrn, cancellationToken);
 
         return Results.Ok(new { alvsOutboundError, btmsOutboundError });
+    }
+
+    [HttpGet]
+    private static async Task<IResult> GetComparison(
+        [FromRoute] string mrn,
+        [FromServices] IComparisonService comparisonService,
+        CancellationToken cancellationToken
+    )
+    {
+        var comparison = await comparisonService.GetOutboundError(mrn, cancellationToken);
+
+        return Results.Ok(comparison);
     }
 
     [SuppressMessage("SonarLint", "S5131", Justification = "This service cannot be compromised by a malicious user")]
