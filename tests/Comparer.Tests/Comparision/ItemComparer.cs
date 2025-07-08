@@ -64,8 +64,8 @@ public class ItemComparerTests
         var check2 = new Check("H217", "C03");
         var item1 = new Item(1, [check1, check2]);
         var item2 = new Item(2, [check1, check2]);
-        var list1 = new List<Item>() { item1, item2 };
-        var list2 = new List<Item>() { item1, item2 };
+        var list1 = new List<Item> { item1, item2 };
+        var list2 = new List<Item> { item1, item2 };
 
         var result = list1.Compare(list2);
 
@@ -79,8 +79,8 @@ public class ItemComparerTests
         var check2 = new Check("H217", "C03");
         var item1 = new Item(1, [check1, check2]);
         var item2 = new Item(2, [check1, check2]);
-        var list1 = new List<Item>() { item1, item2 };
-        var list2 = new List<Item>() { item2 };
+        var list1 = new List<Item> { item1, item2 };
+        var list2 = new List<Item> { item2 };
 
         var result = list1.Compare(list2);
 
@@ -94,8 +94,8 @@ public class ItemComparerTests
         var check2 = new Check("H217", "C03");
         var item1 = new Item(1, [check1, check2]);
         var item2 = new Item(2, [check1, check2]);
-        var list1 = new List<Item>() { item1 };
-        var list2 = new List<Item>() { item2 };
+        var list1 = new List<Item> { item1 };
+        var list2 = new List<Item> { item2 };
 
         var result = list1.Compare(list2);
 

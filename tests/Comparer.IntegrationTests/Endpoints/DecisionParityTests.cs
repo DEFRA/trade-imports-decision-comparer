@@ -3,16 +3,13 @@ using System.Text;
 using System.Text.Json;
 using Defra.TradeImportsDataApi.Domain.CustomsDeclaration;
 using Defra.TradeImportsDataApi.Domain.Events;
-using Defra.TradeImportsDecisionComparer.Comparer.Comparision;
-using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 using Defra.TradeImportsDecisionComparer.Comparer.Projections;
 using FluentAssertions;
-using MongoDB.Driver;
 using Xunit.Abstractions;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.IntegrationTests.Endpoints;
 
-public class ParityTests(ITestOutputHelper output) : SqsTestBase(output)
+public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
 {
     private static readonly JsonSerializerOptions s_options = new() { PropertyNameCaseInsensitive = true };
 
@@ -52,7 +49,7 @@ public class ParityTests(ITestOutputHelper output) : SqsTestBase(output)
         await InsertDecisionsForMrn("parity-mrn2", decision2, decision3);
         await InsertDecisionsForMrn("parity-mrn3", decision2, decision1);
 
-        var response = await client.GetAsync(Testing.Endpoints.Parity.Get(start, null));
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(start, null));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
@@ -90,9 +87,9 @@ public class ParityTests(ITestOutputHelper output) : SqsTestBase(output)
             ResourceType = "CustomsDeclaration",
             SubResourceType = "Finalisation",
             Operation = "Update",
-            Resource = new CustomsDeclaration()
+            Resource = new CustomsDeclaration
             {
-                Finalisation = new Finalisation()
+                Finalisation = new Finalisation
                 {
                     FinalState = "3",
                     ExternalVersion = 1,

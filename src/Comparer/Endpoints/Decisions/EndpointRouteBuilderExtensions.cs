@@ -15,6 +15,8 @@ public static class EndpointRouteBuilderExtensions
         app.MapPut("alvs-decisions/{mrn}/", PutAlvs).RequireAuthorization(PolicyNames.Write);
         app.MapPut("btms-decisions/{mrn}/", PutBtms).RequireAuthorization(PolicyNames.Write);
         app.MapGet("decisions/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
+        app.MapGet("decisions/parity", GetParity).RequireAuthorization(PolicyNames.Read);
+        app.MapGet("decisions/{mrn}/comparison", GetComparison).RequireAuthorization(PolicyNames.Read);
     }
 
     [HttpPut]
@@ -44,6 +46,31 @@ public static class EndpointRouteBuilderExtensions
         var btmsDecision = await decisionService.GetBtmsDecision(mrn, cancellationToken);
 
         return Results.Ok(new { alvsDecision, btmsDecision });
+    }
+
+    [HttpGet]
+    private static async Task<IResult> GetParity(
+        [FromQuery] DateTime? start,
+        [FromQuery] DateTime? end,
+        [FromServices] IParityService parityService,
+        CancellationToken cancellationToken
+    )
+    {
+        var parity = await parityService.Get(start, end, cancellationToken);
+
+        return Results.Ok(parity);
+    }
+
+    [HttpGet]
+    private static async Task<IResult> GetComparison(
+        [FromRoute] string mrn,
+        [FromServices] IComparisonService comparisonService,
+        CancellationToken cancellationToken
+    )
+    {
+        var comparison = await comparisonService.Get(mrn, cancellationToken);
+
+        return Results.Ok(comparison);
     }
 
     [SuppressMessage("SonarLint", "S5131", Justification = "This service cannot be compromised by a malicious user")]

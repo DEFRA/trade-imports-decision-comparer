@@ -1,5 +1,3 @@
-using Defra.TradeImportsDecisionComparer.Comparer.Extensions;
-
 namespace Defra.TradeImportsDecisionComparer.Comparer.Extensions;
 
 public class GeElementExtensionsTests

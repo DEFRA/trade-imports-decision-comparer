@@ -1,10 +1,8 @@
 using System.Text.Json.Serialization;
 using Defra.TradeImportsDecisionComparer.Comparer.Authentication;
 using Defra.TradeImportsDecisionComparer.Comparer.Data.Extensions;
-using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Comparisons;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Decisions;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.OutboundErrors;
-using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Parity;
 using Defra.TradeImportsDecisionComparer.Comparer.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Health;
 using Defra.TradeImportsDecisionComparer.Comparer.Metrics;
@@ -116,8 +114,6 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
     app.MapHealth();
     app.MapDecisionEndpoints();
     app.MapOutboundErrorsEndpoints();
-    app.MapParityEndpoints();
-    app.MapComparisonEndpoints();
     app.UseStatusCodePages();
     app.UseExceptionHandler(
         new ExceptionHandlerOptions
