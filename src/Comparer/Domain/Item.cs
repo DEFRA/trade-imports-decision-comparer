@@ -18,12 +18,12 @@ public record Item(
             return [];
         }
 
-        using XmlReader reader = XmlReader.Create(new StringReader(xml.ToHtmlDecodedXml()));
+        using var reader = XmlReader.Create(new StringReader(xml.ToHtmlDecodedXml()));
         reader.ReadToFollowing(
             ElementNames.DecisionNotification.LocalName,
             ElementNames.DecisionNotification.NamespaceName
         );
-        XElement element = XElement.Load(reader.ReadSubtree());
+        var element = XElement.Load(reader.ReadSubtree());
         return (
             from item in element.Descendants(ElementNames.Item)
             select new Item(

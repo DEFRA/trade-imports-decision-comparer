@@ -8,6 +8,10 @@
     "alvsXml": "<xml alvs=\"true\"/>",
     "btmsXml": "<xml btms=\"true\"/>",
     "match": "ExactMatch",
+    "isFinalisation": true,
+    "alvsTimestamp": "2025-04-23T08:15:00Z",
+    "btmsTimestamp": "2025-04-23T08:30:00Z",
+    "decisionNumberMatched": "ExactMatch",
     "reasons": [
       "Reason 1",
       "Reason 2"
