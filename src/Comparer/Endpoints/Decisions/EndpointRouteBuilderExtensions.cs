@@ -10,23 +10,11 @@ namespace Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Decisions;
 
 public static class EndpointRouteBuilderExtensions
 {
-    public static void MapDecisionEndpoints(this IEndpointRouteBuilder app, bool isDevelopment)
+    public static void MapDecisionEndpoints(this IEndpointRouteBuilder app)
     {
-        var route = app.MapPut("alvs-decisions/{mrn}/", PutAlvs).RequireAuthorization(PolicyNames.Write);
-        AllowAnonymousForDevelopment(isDevelopment, route);
-
-        route = app.MapPut("btms-decisions/{mrn}/", PutBtms).RequireAuthorization(PolicyNames.Write);
-        AllowAnonymousForDevelopment(isDevelopment, route);
-
-        route = app.MapGet("decisions/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
-        AllowAnonymousForDevelopment(isDevelopment, route);
-    }
-
-    [ExcludeFromCodeCoverage]
-    private static void AllowAnonymousForDevelopment(bool isDevelopment, RouteHandlerBuilder route)
-    {
-        if (isDevelopment)
-            route.AllowAnonymous();
+        app.MapPut("alvs-decisions/{mrn}/", PutAlvs).RequireAuthorization(PolicyNames.Write);
+        app.MapPut("btms-decisions/{mrn}/", PutBtms).RequireAuthorization(PolicyNames.Write);
+        app.MapGet("decisions/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
     }
 
     [HttpPut]
