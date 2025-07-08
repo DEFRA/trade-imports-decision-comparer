@@ -59,6 +59,10 @@ public class GetTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
                         "<xml alvs=\"true\"/>",
                         "<xml btms=\"true\"/>",
                         ComparisionOutcome.ExactMatch,
+                        true,
+                        new DateTime(2025, 4, 23, 8, 15, 0, DateTimeKind.Utc),
+                        new DateTime(2025, 4, 23, 8, 30, 0, DateTimeKind.Utc),
+                        DecisionNumberMatch.ExactMatch,
                         ["Reason 1", "Reason 2"]
                     ),
                 }
