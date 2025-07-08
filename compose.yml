@@ -43,6 +43,9 @@ services:
       Mongo__DatabaseUri: mongodb://mongodb:27017/?directConnection=true
       SQS_ENDPOINT: http://localstack:4566
       AWS_EMF_ENVIRONMENT: Local
+      Acl__Clients__IntegrationTests__Secret: integration-tests-pwd
+      Acl__Clients__IntegrationTests__Scopes__0: read
+      Acl__Clients__IntegrationTests__Scopes__1: write
     ports:
       - "8080:8080"
     healthcheck:

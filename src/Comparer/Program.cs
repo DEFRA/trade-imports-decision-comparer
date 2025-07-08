@@ -107,7 +107,6 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
 static WebApplication BuildWebApplication(WebApplicationBuilder builder)
 {
     var app = builder.Build();
-    var isDevelopment = app.Environment.IsDevelopment();
 
     app.UseEmfExporter();
     app.UseHeaderPropagation();
@@ -115,10 +114,10 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
     app.UseAuthorization();
     app.UseMiddleware<MetricsMiddleware>();
     app.MapHealth();
-    app.MapDecisionEndpoints(isDevelopment);
-    app.MapOutboundErrorsEndpoints(isDevelopment);
-    app.MapParityEndpoints(isDevelopment);
-    app.MapComparisonEndpoints(isDevelopment);
+    app.MapDecisionEndpoints();
+    app.MapOutboundErrorsEndpoints();
+    app.MapParityEndpoints();
+    app.MapComparisonEndpoints();
     app.UseStatusCodePages();
     app.UseExceptionHandler(
         new ExceptionHandlerOptions

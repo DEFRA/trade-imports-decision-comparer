@@ -9,23 +9,11 @@ namespace Defra.TradeImportsDecisionComparer.Comparer.Endpoints.OutboundErrors;
 
 public static class EndpointRouteBuilderExtensions
 {
-    public static void MapOutboundErrorsEndpoints(this IEndpointRouteBuilder app, bool isDevelopment)
+    public static void MapOutboundErrorsEndpoints(this IEndpointRouteBuilder app)
     {
-        var route = app.MapPut("alvs-outbound-errors/{mrn}/", PutAlvs).RequireAuthorization(PolicyNames.Write);
-        AllowAnonymousForDevelopment(isDevelopment, route);
-
-        route = app.MapPut("btms-outbound-errors/{mrn}/", PutBtms).RequireAuthorization(PolicyNames.Write);
-        AllowAnonymousForDevelopment(isDevelopment, route);
-
-        route = app.MapGet("outbound-errors/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
-        AllowAnonymousForDevelopment(isDevelopment, route);
-    }
-
-    [ExcludeFromCodeCoverage]
-    private static void AllowAnonymousForDevelopment(bool isDevelopment, RouteHandlerBuilder route)
-    {
-        if (isDevelopment)
-            route.AllowAnonymous();
+        app.MapPut("alvs-outbound-errors/{mrn}/", PutAlvs).RequireAuthorization(PolicyNames.Write);
+        app.MapPut("btms-outbound-errors/{mrn}/", PutBtms).RequireAuthorization(PolicyNames.Write);
+        app.MapGet("outbound-errors/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
     }
 
     [HttpPut]

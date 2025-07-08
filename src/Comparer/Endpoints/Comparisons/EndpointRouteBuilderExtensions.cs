@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Defra.TradeImportsDecisionComparer.Comparer.Authentication;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,17 +6,9 @@ namespace Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Comparisons;
 
 public static class EndpointRouteBuilderExtensions
 {
-    public static void MapComparisonEndpoints(this IEndpointRouteBuilder app, bool isDevelopment)
+    public static void MapComparisonEndpoints(this IEndpointRouteBuilder app)
     {
-        var route = app.MapGet("comparisons/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
-        AllowAnonymousForDevelopment(isDevelopment, route);
-    }
-
-    [ExcludeFromCodeCoverage]
-    private static void AllowAnonymousForDevelopment(bool isDevelopment, RouteHandlerBuilder route)
-    {
-        if (isDevelopment)
-            route.AllowAnonymous();
+        app.MapGet("comparisons/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
     }
 
     [HttpGet]
