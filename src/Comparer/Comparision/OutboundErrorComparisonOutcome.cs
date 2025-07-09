@@ -5,9 +5,20 @@ namespace Defra.TradeImportsDecisionComparer.Comparer.Comparision;
 public enum OutboundErrorComparisonOutcome
 {
     LegacyAlvsErrorCode = 1,
+    Match = 2,
+    Mismatch = 3,
+    NoAlvsErrors = 4,
+    NoBtmsErrors = 5,
+    AlvsOnlyError = 6,
+    BtmsOnlyError = 7,
 }
 
-public record OutboundErrorComparisonOutcomeEvaluatorContext(List<Error> AlvsErrors);
+public record OutboundErrorComparisonOutcomeEvaluatorContext(
+    ErrorHeader AlvsHeader,
+    List<Error> AlvsErrors,
+    ErrorHeader BtmsHeader,
+    List<Error> BtmsErrors
+);
 
 public static class OutboundErrorComparisionOutcomeEvaluator
 {
@@ -44,11 +55,59 @@ public static class OutboundErrorComparisionOutcomeEvaluator
         this OutboundErrorComparisonOutcomeEvaluatorContext context
     )
     {
+        if (context.AlvsErrors.Count == 0)
+        {
+            return OutboundErrorComparisonOutcome.NoAlvsErrors;
+        }
+
+        if (context.BtmsErrors.Count == 0)
+        {
+            return OutboundErrorComparisonOutcome.NoBtmsErrors;
+        }
+
         if (context.AlvsErrors.Any(x => x.ErrorCode is not null && s_legacyAlvsErrorCodes.Contains(x.ErrorCode)))
         {
+            // What about non legacy codes?
+
             return OutboundErrorComparisonOutcome.LegacyAlvsErrorCode;
         }
 
-        return OutboundErrorComparisonOutcome.LegacyAlvsErrorCode;
+        if (
+            HeaderMatch(context)
+            && context.AlvsErrors.Select(x => x.ErrorCode).SequenceEqual(context.BtmsErrors.Select(x => x.ErrorCode))
+        )
+        {
+            return OutboundErrorComparisonOutcome.Match;
+        }
+
+        if (
+            context.AlvsErrors.Any(e =>
+                HeaderMatch(context)
+                && !context.BtmsErrors.Any(x => x.ErrorCode is not null && x.ErrorCode.Equals(e.ErrorCode))
+            )
+        )
+        {
+            return OutboundErrorComparisonOutcome.AlvsOnlyError;
+        }
+
+        if (
+            context.BtmsErrors.Any(e =>
+                HeaderMatch(context)
+                && !context.AlvsErrors.Any(x => x.ErrorCode is not null && x.ErrorCode.Equals(e.ErrorCode))
+            )
+        )
+        {
+            return OutboundErrorComparisonOutcome.BtmsOnlyError;
+        }
+
+        return OutboundErrorComparisonOutcome.Mismatch;
+    }
+
+    private static bool HeaderMatch(OutboundErrorComparisonOutcomeEvaluatorContext context)
+    {
+        return context.AlvsHeader.EntryReference is not null
+            && context.AlvsHeader.EntryReference.Equals(context.BtmsHeader.EntryReference)
+            && context.AlvsHeader.EntryVersionNumber is not null
+            && context.AlvsHeader.EntryVersionNumber.Equals(context.BtmsHeader.EntryVersionNumber);
     }
 }

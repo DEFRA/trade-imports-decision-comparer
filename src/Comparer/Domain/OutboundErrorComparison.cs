@@ -12,9 +12,17 @@ public record OutboundErrorComparison(
 {
     public static OutboundErrorComparison Create(string? alvsXml, string? btmsXml)
     {
+        var alvsHeader = ErrorHeader.FromXml(alvsXml);
         var alvsErrors = Error.FromXml(alvsXml);
+        var btmsHeader = ErrorHeader.FromXml(btmsXml);
+        var btmsErrors = Error.FromXml(btmsXml);
 
-        var context = new OutboundErrorComparisonOutcomeEvaluatorContext(alvsErrors);
+        var context = new OutboundErrorComparisonOutcomeEvaluatorContext(
+            alvsHeader,
+            alvsErrors,
+            btmsHeader,
+            btmsErrors
+        );
 
         return new OutboundErrorComparison(DateTime.UtcNow, alvsXml, btmsXml, context.GetComparisionOutcome());
     }

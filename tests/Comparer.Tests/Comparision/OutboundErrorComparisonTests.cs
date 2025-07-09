@@ -36,20 +36,107 @@ public class OutboundErrorComparisonTests
     [InlineData("ALVSVAL327")]
     public void WhenLegacyErrorCode_ShouldBeLegacyAlvsErrorCode(string legacyErrorCode)
     {
-        var outboundError = SampleOutboundError.Replace("ALVSVALERRORCODE", legacyErrorCode);
+        var alvsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", legacyErrorCode);
+        var btmsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL101");
 
-        var comparison = OutboundErrorComparison.Create(outboundError, null);
+        var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
 
         comparison.Match.Should().Be(OutboundErrorComparisonOutcome.LegacyAlvsErrorCode);
     }
 
     [Fact]
-    public void WhenActiveErrorCode_ShouldBeLegacyAlvsErrorCode()
+    public void WhenActiveErrorCode_ShouldBeMatch()
     {
-        var outboundError = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL101");
+        var alvsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL101");
+        var btmsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL101");
 
-        var comparison = OutboundErrorComparison.Create(outboundError, null);
+        var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
 
-        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.LegacyAlvsErrorCode);
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.Match);
+    }
+
+    [Fact]
+    public void WhenNoAlvsErrorCodes_ShouldBeNoAlvsErrors()
+    {
+        var comparison = OutboundErrorComparison.Create(null, null);
+
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.NoAlvsErrors);
+    }
+
+    [Fact]
+    public void WhenNoBtmsErrorCodes_ShouldBeNoBtmsErrors()
+    {
+        var comparison = OutboundErrorComparison.Create(SampleOutboundError, null);
+
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.NoBtmsErrors);
+    }
+
+    [Fact]
+    public void WhenBtmsErrorCodeIsDifferent_ShouldBeMismatch()
+    {
+        var alvsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL101");
+        var btmsXml = SampleOutboundError
+            .Replace("ALVSVALERRORCODE", "ALVSVAL102")
+            .Replace(
+                "&lt;NS2:EntryReference&gt;MRN&lt;/NS2:EntryReference&gt;",
+                "&lt;NS2:EntryReference&gt;DIFFERENT&lt;/NS2:EntryReference&gt;"
+            );
+
+        var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
+
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.Mismatch);
+    }
+
+    [Fact]
+    public void WhenBtmsEntryReferenceIsDifferent_ShouldBeMismatch()
+    {
+        var alvsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL101");
+        var btmsXml = SampleOutboundError.Replace(
+            "&lt;NS2:EntryReference&gt;MRN&lt;/NS2:EntryReference&gt;",
+            "&lt;NS2:EntryReference&gt;DIFFERENT&lt;/NS2:EntryReference&gt;"
+        );
+
+        var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
+
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.Mismatch);
+    }
+
+    [Fact]
+    public void WhenBtmsEntryVersionNumberIsDifferent_ShouldBeMismatch()
+    {
+        var alvsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL101");
+        var btmsXml = SampleOutboundError.Replace(
+            "&lt;NS2:EntryVersionNumber&gt;1&lt;/NS2:EntryVersionNumber&gt;",
+            "&lt;NS2:EntryVersionNumber&gt;2&lt;/NS2:EntryVersionNumber&gt;"
+        );
+
+        var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
+
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.Mismatch);
+    }
+
+    [Fact]
+    public void WhenAlvsOnlyError_ShouldBeAlvsOnlyError()
+    {
+        var alvsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL101");
+        var btmsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL102");
+
+        var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
+
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.AlvsOnlyError);
+    }
+
+    [Fact]
+    public void WhenBtmsOnlyError_ShouldBeAlvsOnlyError()
+    {
+        var alvsXml = SampleOutboundError.Replace("ALVSVALERRORCODE", "ALVSVAL101");
+        var btmsXml = SampleOutboundError.Replace(
+            "&lt;NS2:Error&gt;&lt;NS2:ErrorCode&gt;ALVSVALERRORCODE&lt;/NS2:ErrorCode&gt;&lt;NS2:ErrorMessage&gt;Error message&lt;/NS2:ErrorMessage&gt;&lt;/NS2:Error&gt;",
+            "&lt;NS2:Error&gt;&lt;NS2:ErrorCode&gt;ALVSVAL101&lt;/NS2:ErrorCode&gt;&lt;NS2:ErrorMessage&gt;Error message&lt;/NS2:ErrorMessage&gt;&lt;/NS2:Error&gt;&lt;NS2:Error&gt;&lt;NS2:ErrorCode&gt;ALVSVAL102&lt;/NS2:ErrorCode&gt;&lt;NS2:ErrorMessage&gt;Error message&lt;/NS2:ErrorMessage&gt;&lt;/NS2:Error&gt;"
+        );
+
+        var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
+
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.BtmsOnlyError);
     }
 }

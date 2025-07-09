@@ -11,4 +11,7 @@ public static class ErrorElementNames
     public static readonly XName Error = XName.Get(nameof(Error), Namespace);
     public static readonly XName ErrorCode = XName.Get(nameof(ErrorCode), Namespace);
     public static readonly XName ErrorMessage = XName.Get(nameof(ErrorMessage), Namespace);
+    public static readonly XName Header = XName.Get(nameof(Header), Namespace);
+    public static readonly XName EntryReference = XName.Get(nameof(EntryReference), Namespace);
+    public static readonly XName EntryVersionNumber = XName.Get(nameof(EntryVersionNumber), Namespace);
 }
