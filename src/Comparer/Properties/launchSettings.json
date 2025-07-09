@@ -4,7 +4,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5000",
+      "applicationUrl": "http://localhost:8080",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "AWS_ACCESS_KEY_ID": "test",
@@ -12,7 +12,11 @@
         "AWS_REGION": "eu-west-2",
         "AWS_SECRET_ACCESS_KEY": "test",
         "ENVIRONMENT": "local",
-        "SQS_ENDPOINT": "http://localhost:4566"
+        "SQS_ENDPOINT": "http://localhost:4566",
+
+        "Acl__Clients__IntegrationTests__Secret": "integration-tests-pwd",
+        "Acl__Clients__IntegrationTests__Scopes__0": "read",
+        "Acl__Clients__IntegrationTests__Scopes__1": "write"
       }
     }
   }

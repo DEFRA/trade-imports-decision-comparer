@@ -2,6 +2,7 @@ using System.Text.Json;
 using Defra.TradeImportsDecisionComparer.Comparer.Configuration;
 using Defra.TradeImportsDecisionComparer.Comparer.Consumers;
 using Defra.TradeImportsDecisionComparer.Comparer.Metrics;
+using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
 using SlimMessageBus.Host;
 using SlimMessageBus.Host.AmazonSQS;

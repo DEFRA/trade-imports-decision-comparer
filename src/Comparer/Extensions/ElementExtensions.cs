@@ -32,19 +32,23 @@ public static class ElementExtensions
 
     public static int GetDecisionNumber(this string xml)
     {
-        using XmlReader reader = XmlReader.Create(new StringReader(xml.ToHtmlDecodedXml()));
+        using var reader = XmlReader.Create(new StringReader(xml.ToHtmlDecodedXml()));
         reader.ReadToFollowing(
             ElementNames.DecisionNotification.LocalName,
             ElementNames.DecisionNotification.NamespaceName
         );
 
-        XElement element = XElement.Load(reader.ReadSubtree());
+        if (reader.NodeType != XmlNodeType.Element)
+            return 0;
+
+        var element = XElement.Load(reader.ReadSubtree());
         var decisionNumberElement = element
             .Descendants(ElementNames.Header)
             .Descendants(ElementNames.DecisionNumber)
             .FirstOrDefault();
+
         if (decisionNumberElement?.Value != null)
-            return Int32.Parse(decisionNumberElement.Value);
+            return int.Parse(decisionNumberElement.Value);
 
         return 0;
     }

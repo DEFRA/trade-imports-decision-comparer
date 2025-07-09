@@ -16,6 +16,20 @@ public class ItemTests
     }
 
     [Fact]
+    public void WhenXmlHasNoItems_ReturnEmptyList()
+    {
+        var result = Item.FromXml(
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+              <NS1:Envelope xmlns:NS1=""http://www.w3.org/2003/05/soap-envelope"">
+                  <NS1:Body />
+              </NS1:Envelope>
+            "
+        );
+
+        result.Count.Should().Be(0);
+    }
+
+    [Fact]
     public void WhenXmlIsHasValue_ReturnItems()
     {
         var result = Item.FromXml(SampleDecision);
