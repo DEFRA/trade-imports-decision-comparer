@@ -31,6 +31,7 @@ public class OutboundErrorParityTests : IntegrationTestBase
         result.AlvsOnlyMrns.Should().BeEmpty();
         result.BtmsOnlyMrns.Should().BeEmpty();
         result.MismatchMrns.Should().BeEmpty();
+        result.HeaderMismatchMrns.Should().BeEmpty();
     }
 
     [Fact]

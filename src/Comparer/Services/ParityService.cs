@@ -90,6 +90,11 @@ public class ParityService(IDbContext dbContext) : IParityService
             where c.Latest.Match == OutboundErrorComparisonOutcome.Mismatch
             select c.Id;
 
+        var headerMismatchMrnQuery =
+            from c in query
+            where c.Latest.Match == OutboundErrorComparisonOutcome.HeaderMismatch
+            select c.Id;
+
         return new OutboundErrorParityProjection(
             new Dictionary<string, int>(
                 (await countQuery.ToListAsync(cancellationToken)).Select(x => new KeyValuePair<string, int>(
@@ -99,7 +104,8 @@ public class ParityService(IDbContext dbContext) : IParityService
             ),
             await alvsOnlyMrnQuery.ToListAsync(cancellationToken),
             await btmsOnlyMrnQuery.ToListAsync(cancellationToken),
-            await mismatchMrnQuery.ToListAsync(cancellationToken)
+            await mismatchMrnQuery.ToListAsync(cancellationToken),
+            await headerMismatchMrnQuery.ToListAsync(cancellationToken)
         );
     }
 }

@@ -76,36 +76,25 @@ public class OutboundErrorComparisonTests
     }
 
     [Fact]
-    public void WhenBtmsErrorCodeIsDifferent_ShouldBeMismatch()
-    {
-        var alvsXml = SampleOutboundError.WithErrorCode(ActiveErrorCode1);
-        var btmsXml = SampleOutboundError.WithErrorCode(ActiveErrorCode2).WithEntryReference("DIFFERENT");
-
-        var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
-
-        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.Mismatch);
-    }
-
-    [Fact]
-    public void WhenBtmsEntryReferenceIsDifferent_ShouldBeMismatch()
+    public void WhenBtmsEntryReferenceIsDifferent_ShouldBeHeaderMismatch()
     {
         var alvsXml = SampleOutboundError.WithErrorCode(ActiveErrorCode1);
         var btmsXml = SampleOutboundError.WithEntryReference("DIFFERENT");
 
         var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
 
-        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.Mismatch);
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.HeaderMismatch);
     }
 
     [Fact]
-    public void WhenBtmsEntryVersionNumberIsDifferent_ShouldBeMismatch()
+    public void WhenBtmsEntryVersionNumberIsDifferent_ShouldBeHeaderMismatch()
     {
         var alvsXml = SampleOutboundError.WithErrorCode(ActiveErrorCode1);
         var btmsXml = SampleOutboundError.WithEntryVersionNumber("2");
 
         var comparison = OutboundErrorComparison.Create(alvsXml, btmsXml);
 
-        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.Mismatch);
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.HeaderMismatch);
     }
 
     [Fact]
