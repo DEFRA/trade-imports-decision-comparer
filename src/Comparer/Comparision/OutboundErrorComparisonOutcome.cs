@@ -65,25 +65,24 @@ public static class OutboundErrorComparisionOutcomeEvaluator
             return OutboundErrorComparisonOutcome.NoBtmsErrors;
         }
 
-        if (context.AlvsErrors.Any(x => x.ErrorCode is not null && s_legacyAlvsErrorCodes.Contains(x.ErrorCode)))
+        if (context.AlvsErrors.All(x => x.ErrorCode is not null && s_legacyAlvsErrorCodes.Contains(x.ErrorCode)))
         {
-            // What about non legacy codes?
-
             return OutboundErrorComparisonOutcome.LegacyAlvsErrorCode;
         }
 
-        if (
-            HeaderMatch(context)
-            && context.AlvsErrors.Select(x => x.ErrorCode).SequenceEqual(context.BtmsErrors.Select(x => x.ErrorCode))
-        )
+        var nonLegacyAlvsErrorCodes = context
+            .AlvsErrors.Select(x => x.ErrorCode)
+            .Where(x => x is not null && !s_legacyAlvsErrorCodes.Contains(x))
+            .ToList();
+
+        if (HeaderMatch(context) && nonLegacyAlvsErrorCodes.SequenceEqual(context.BtmsErrors.Select(x => x.ErrorCode)))
         {
             return OutboundErrorComparisonOutcome.Match;
         }
 
         if (
-            context.AlvsErrors.Any(e =>
-                HeaderMatch(context)
-                && !context.BtmsErrors.Any(x => x.ErrorCode is not null && x.ErrorCode.Equals(e.ErrorCode))
+            nonLegacyAlvsErrorCodes.Any(e =>
+                HeaderMatch(context) && !context.BtmsErrors.Any(x => x.ErrorCode is not null && x.ErrorCode.Equals(e))
             )
         )
         {
@@ -92,8 +91,7 @@ public static class OutboundErrorComparisionOutcomeEvaluator
 
         if (
             context.BtmsErrors.Any(e =>
-                HeaderMatch(context)
-                && !context.AlvsErrors.Any(x => x.ErrorCode is not null && x.ErrorCode.Equals(e.ErrorCode))
+                HeaderMatch(context) && !nonLegacyAlvsErrorCodes.Any(x => x is not null && x.Equals(e.ErrorCode))
             )
         )
         {
