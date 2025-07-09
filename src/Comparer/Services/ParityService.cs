@@ -51,4 +51,55 @@ public class ParityService(IDbContext dbContext) : IParityService
             await misMatchMrnQuery.ToListAsync(cancellationToken)
         );
     }
+
+    public async Task<OutboundErrorParityProjection> GetOutboundError(
+        DateTime? start,
+        DateTime? end,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = from c in dbContext.OutboundErrorComparisons select c;
+
+        if (start.HasValue)
+        {
+            query = from c in query where c.Updated >= start select c;
+        }
+
+        if (end.HasValue)
+        {
+            query = from c in query where c.Updated <= end select c;
+        }
+
+        var countQuery =
+            from c in query
+            group c by c.Latest.Match.ToString() into grp
+            select new { grp.Key, Count = grp.Count() };
+
+        var alvsOnlyMrnQuery =
+            from c in query
+            where c.Latest.Match == OutboundErrorComparisonOutcome.AlvsOnlyError
+            select c.Id;
+
+        var btmsOnlyMrnQuery =
+            from c in query
+            where c.Latest.Match == OutboundErrorComparisonOutcome.BtmsOnlyError
+            select c.Id;
+
+        var mismatchMrnQuery =
+            from c in query
+            where c.Latest.Match == OutboundErrorComparisonOutcome.Mismatch
+            select c.Id;
+
+        return new OutboundErrorParityProjection(
+            new Dictionary<string, int>(
+                (await countQuery.ToListAsync(cancellationToken)).Select(x => new KeyValuePair<string, int>(
+                    x.Key,
+                    x.Count
+                ))
+            ),
+            await alvsOnlyMrnQuery.ToListAsync(cancellationToken),
+            await btmsOnlyMrnQuery.ToListAsync(cancellationToken),
+            await mismatchMrnQuery.ToListAsync(cancellationToken)
+        );
+    }
 }

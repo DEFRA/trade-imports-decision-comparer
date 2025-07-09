@@ -52,4 +52,27 @@ public static class ElementExtensions
 
         return 0;
     }
+
+    public static int GetErrorEntryVersionNumber(this string xml)
+    {
+        using var reader = XmlReader.Create(new StringReader(xml.ToHtmlDecodedXml()));
+        reader.ReadToFollowing(
+            ErrorElementNames.HMRCErrorNotification.LocalName,
+            ErrorElementNames.HMRCErrorNotification.NamespaceName
+        );
+
+        if (reader.NodeType != XmlNodeType.Element)
+            return 0;
+
+        var element = XElement.Load(reader.ReadSubtree());
+        var entryVersionNumber = element
+            .Descendants(ErrorElementNames.Header)
+            .Descendants(ErrorElementNames.EntryVersionNumber)
+            .FirstOrDefault();
+
+        if (entryVersionNumber?.Value != null)
+            return int.Parse(entryVersionNumber.Value);
+
+        return 0;
+    }
 }

@@ -14,12 +14,14 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
 {
     private const string Mrn = "mrn";
     private IOutboundErrorService MockOutboundErrorService { get; } = Substitute.For<IOutboundErrorService>();
+    private IComparisonManager MockComparisonManager { get; } = Substitute.For<IComparisonManager>();
 
     protected override void ConfigureTestServices(IServiceCollection services)
     {
         base.ConfigureTestServices(services);
 
         services.AddTransient<IOutboundErrorService>(_ => MockOutboundErrorService);
+        services.AddTransient<IComparisonManager>(_ => MockComparisonManager);
     }
 
     [Fact]
@@ -62,6 +64,8 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
         var content = await response.Content.ReadAsStringAsync();
 
         await Verify(content);
+
+        await MockComparisonManager.Received().CompareLatestOutboundErrors(Mrn, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -120,6 +124,8 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
         var content = await response.Content.ReadAsStringAsync();
 
         await Verify(content);
+
+        await MockComparisonManager.Received().CompareLatestOutboundErrors(Mrn, Arg.Any<CancellationToken>());
     }
 
     [Fact]

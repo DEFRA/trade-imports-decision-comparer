@@ -10,4 +10,10 @@ public interface IParityService
         bool isFinalisation,
         CancellationToken cancellationToken
     );
+
+    Task<OutboundErrorParityProjection> GetOutboundError(
+        DateTime? start,
+        DateTime? end,
+        CancellationToken cancellationToken
+    );
 }

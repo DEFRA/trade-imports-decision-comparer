@@ -11,11 +11,13 @@ public record Error(
     [property: JsonPropertyName("errorMessage")] string? ErrorMessage
 )
 {
+    public static List<Error> Empty => [];
+
     public static List<Error> FromXml(string? xml)
     {
         if (string.IsNullOrEmpty(xml))
         {
-            return [];
+            return Empty;
         }
 
         using var reader = XmlReader.Create(new StringReader(xml.ToHtmlDecodedXml()));
@@ -23,7 +25,14 @@ public record Error(
             ErrorElementNames.HMRCErrorNotification.LocalName,
             ErrorElementNames.HMRCErrorNotification.NamespaceName
         );
+
+        if (reader.NodeType != XmlNodeType.Element)
+        {
+            return Empty;
+        }
+
         var element = XElement.Load(reader.ReadSubtree());
+
         return (
             from error in element.Descendants(ErrorElementNames.Error)
             select new Error(
