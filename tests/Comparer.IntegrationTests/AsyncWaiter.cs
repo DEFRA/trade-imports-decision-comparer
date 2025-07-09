@@ -13,8 +13,15 @@ public static class AsyncWaiter
 
         while (true)
         {
-            if (await condition())
-                return true;
+            try
+            {
+                if (await condition())
+                    return true;
+            }
+            catch
+            {
+                // ignored
+            }
 
             if (timer.Elapsed > s_defaultTimeout)
                 return false;

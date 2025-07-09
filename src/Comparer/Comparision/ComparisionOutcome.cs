@@ -13,13 +13,17 @@ public enum ComparisionOutcome
     CancelledMrn = 6,
 }
 
-public record ComparisionOutcomeEvaluatorContext(List<Item> AlvsItems, List<Item> BtmsItems, Finalisation Finalisation);
+public record ComparisionOutcomeEvaluatorContext(
+    List<Item> AlvsItems,
+    List<Item> BtmsItems,
+    Finalisation? Finalisation
+);
 
 public static class ComparisionOutcomeEvaluator
 {
     public static ComparisionOutcome GetComparisionOutcome(this ComparisionOutcomeEvaluatorContext context)
     {
-        if (context.Finalisation.FinalState is "1" or "2")
+        if (context.Finalisation?.FinalState is "1" or "2")
         {
             return ComparisionOutcome.CancelledMrn;
         }

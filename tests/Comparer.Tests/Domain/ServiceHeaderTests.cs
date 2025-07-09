@@ -13,4 +13,18 @@ public class ServiceHeaderTests
         var serviceHeader = ServiceHeader.FromXml(SampleDecision);
         serviceHeader.ServiceCallTimestamp.Should().Be(new DateTime(2025, 05, 29, 18, 57, 29, 298, DateTimeKind.Utc));
     }
+
+    [Fact]
+    public void WhenXmlHasNoServiceHeader_ReturnEmptyServiceHeader()
+    {
+        var result = ServiceHeader.FromXml(
+            @"<?xml version=""1.0"" encoding=""UTF-8""?>
+              <NS1:Envelope xmlns:NS1=""http://www.w3.org/2003/05/soap-envelope"">
+                  <NS1:Body />
+              </NS1:Envelope>
+            "
+        );
+
+        result.ServiceCallTimestamp.Should().BeNull();
+    }
 }

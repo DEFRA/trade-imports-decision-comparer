@@ -152,4 +152,12 @@ public class ComparisonTests
 
         result.DecisionNumberMatched.Should().BeNull();
     }
+
+    [Fact]
+    public void WhenGivenDecisionToCompare_WhichDoesNotIncludeAFinalisation_IsFinalisationShouldBeFalse()
+    {
+        var result = Comparison.Create(SampleDecision, SampleDecision, null);
+
+        result.IsFinalisation.Should().BeFalse();
+    }
 }

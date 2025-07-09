@@ -16,7 +16,7 @@ public record Comparison(
     [property: JsonPropertyName("reasons")] string[]? Reasons
 )
 {
-    public static Comparison Create(string? alvsXml, string? btmsXml, Finalisation finalisation)
+    public static Comparison Create(string? alvsXml, string? btmsXml, Finalisation? finalisation)
     {
         var alvsItems = Item.FromXml(alvsXml);
         var alvsTimestamp = ServiceHeader.FromXml(alvsXml).ServiceCallTimestamp;
@@ -34,7 +34,7 @@ public record Comparison(
             alvsXml,
             btmsXml,
             comparisonOutcome,
-            true,
+            finalisation != null,
             alvsTimestamp,
             btmsTimestamp,
             GetDecisionNumberMatch(alvsXml, btmsXml, comparisonOutcome),

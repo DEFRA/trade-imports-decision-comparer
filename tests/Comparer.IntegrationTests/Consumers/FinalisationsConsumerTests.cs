@@ -105,7 +105,8 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
             await AsyncWaiter.WaitForAsync(async () =>
             {
                 response = await client.GetAsync(Testing.Endpoints.Decisions.Comparison(mrn));
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
+                if (response.StatusCode != HttpStatusCode.OK)
+                    return false;
 
                 var content = await response.Content.ReadAsStringAsync();
                 if (string.IsNullOrEmpty(content))
@@ -160,7 +161,10 @@ public class FinalisationsConsumerTests(ITestOutputHelper output) : SqsTestBase(
 
                 return entity
                     is {
-                        History: [{ AlvsXml: SampleDecision, BtmsXml: SampleDecision }],
+                        History: [
+                            { AlvsXml: SampleDecision, IsFinalisation: false },
+                            { AlvsXml: SampleDecision, BtmsXml: SampleDecision, IsFinalisation: true },
+                        ],
                         Latest: { AlvsXml: SampleDecision, BtmsXml: SampleDecision }
                     };
             })

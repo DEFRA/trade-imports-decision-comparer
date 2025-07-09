@@ -14,12 +14,14 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
 {
     private const string Mrn = "mrn";
     private IDecisionService MockDecisionService { get; } = Substitute.For<IDecisionService>();
+    private IComparisonManager MockComparisonManager { get; } = Substitute.For<IComparisonManager>();
 
     protected override void ConfigureTestServices(IServiceCollection services)
     {
         base.ConfigureTestServices(services);
 
         services.AddTransient<IDecisionService>(_ => MockDecisionService);
+        services.AddTransient<IComparisonManager>(_ => MockComparisonManager);
     }
 
     [Fact]
@@ -56,6 +58,20 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
         var content = await response.Content.ReadAsStringAsync();
 
         await Verify(content);
+    }
+
+    [Fact]
+    public async Task PutAlvs_WhenValid_ShouldTriggerAComparison()
+    {
+        var client = CreateClient();
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.Decisions.Alvs.Put(Mrn),
+            new StringContent("<xml alvs=\"true\" />")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        await MockComparisonManager.Received().CreateUpdateComparisonEntity(Mrn, null, Arg.Any<CancellationToken>());
     }
 
     [Fact]

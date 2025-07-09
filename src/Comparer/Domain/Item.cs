@@ -23,6 +23,12 @@ public record Item(
             ElementNames.DecisionNotification.LocalName,
             ElementNames.DecisionNotification.NamespaceName
         );
+
+        if (reader.NodeType != XmlNodeType.Element)
+        {
+            return [];
+        }
+
         var element = XElement.Load(reader.ReadSubtree());
         return (
             from item in element.Descendants(ElementNames.Item)

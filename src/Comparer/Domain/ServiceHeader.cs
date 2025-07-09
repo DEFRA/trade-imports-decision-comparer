@@ -8,11 +8,13 @@ namespace Defra.TradeImportsDecisionComparer.Comparer.Domain;
 
 public record ServiceHeader([property: JsonPropertyName("serviceCallTimestamp")] DateTime? ServiceCallTimestamp)
 {
+    private static readonly ServiceHeader s_emptyServiceHeader = new(null as DateTime?);
+
     public static ServiceHeader FromXml(string? xml)
     {
         if (xml == null)
         {
-            return new ServiceHeader(null as DateTime?);
+            return s_emptyServiceHeader;
         }
 
         using var reader = XmlReader.Create(new StringReader(xml.ToHtmlDecodedXml()));
@@ -20,6 +22,11 @@ public record ServiceHeader([property: JsonPropertyName("serviceCallTimestamp")]
             ElementNames.ServiceCallTimestamp.LocalName,
             ElementNames.DecisionNotification.NamespaceName
         );
+
+        if (reader.NodeType != XmlNodeType.Element)
+        {
+            return s_emptyServiceHeader;
+        }
 
         return new ServiceHeader(reader.ReadElementContentAsDateTime());
     }

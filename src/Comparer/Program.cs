@@ -97,6 +97,7 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
     builder.Services.AddTransient<IOutboundErrorService, OutboundErrorService>();
     builder.Services.AddTransient<IDecisionService, DecisionService>();
     builder.Services.AddTransient<IComparisonService, ComparisonService>();
+    builder.Services.AddTransient<IComparisonManager, ComparisonManager>();
 
     builder.Services.AddTransient<MetricsMiddleware>();
     builder.Services.AddSingleton<RequestMetrics>();
