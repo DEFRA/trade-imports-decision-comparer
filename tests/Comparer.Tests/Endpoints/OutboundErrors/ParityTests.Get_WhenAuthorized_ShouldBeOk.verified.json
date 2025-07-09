@@ -1,0 +1,17 @@
+﻿{
+  "stats": {
+    "Mismatch": 3
+  },
+  "alvsOnlyMrns": [
+    "mrn"
+  ],
+  "btmsOnlyMrns": [
+    "mrn"
+  ],
+  "mismatchMrns": [
+    "mrn"
+  ],
+  "headerMismatchMrns": [
+    "mrn"
+  ]
+}
