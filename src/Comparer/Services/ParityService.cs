@@ -41,14 +41,33 @@ public class ParityService(IDbContext dbContext) : IParityService
 
         var misMatchMrnQuery = from c in query where c.Latest.Match == ComparisionOutcome.Mismatch select c.Id;
 
+        var decisionNumberCountQuery =
+            from c in query
+            where c.Latest.DecisionNumberMatched != null
+            group c by c.Latest.DecisionNumberMatched.ToString() into grp
+            select new { grp.Key, Count = grp.Count() };
+
+        var misMatchDecisionNumberQuery =
+            from c in query
+            where c.Latest.DecisionNumberMatched == DecisionNumberMatch.Mismatch
+            select c.Id;
+
+        var countQueryResults = await countQuery.ToListAsync(cancellationToken);
+        var decisionNumberCountQueryResults = await decisionNumberCountQuery.ToListAsync(cancellationToken);
+
+        var stats = new Dictionary<string, int>(
+            countQueryResults.Select(x => new KeyValuePair<string, int>(x.Key, x.Count))
+        );
+
+        var decisionNumberStats = new Dictionary<string, int>(
+            decisionNumberCountQueryResults.Select(x => new KeyValuePair<string, int>(x.Key, x.Count))
+        );
+
         return new ParityProjection(
-            new Dictionary<string, int>(
-                (await countQuery.ToListAsync(cancellationToken)).Select(x => new KeyValuePair<string, int>(
-                    x.Key,
-                    x.Count
-                ))
-            ),
-            await misMatchMrnQuery.ToListAsync(cancellationToken)
+            stats,
+            decisionNumberStats,
+            await misMatchMrnQuery.ToListAsync(cancellationToken),
+            await misMatchDecisionNumberQuery.ToListAsync(cancellationToken)
         );
     }
 

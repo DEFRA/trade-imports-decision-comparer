@@ -13,14 +13,119 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
 {
     private static readonly JsonSerializerOptions s_options = new() { PropertyNameCaseInsensitive = true };
 
-    private const string decision1 =
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\">\r\n    <soap:Header>\r\n       <oas:Security soap:role=\"system\" soap:mustUnderstand=\"true\" xmlns:oas=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">\r\n            <oas:UsernameToken>\r\n                <oas:Username>ibmtest</oas:Username>\r\n                <oas:Password>password</oas:Password>\r\n            </oas:UsernameToken>\r\n        </oas:Security>\r\n    </soap:Header>\r\n    <soap:Body>\r\n        <DecisionNotification xmlns=\"http://uk.gov.hmrc.ITSW2.ws\">\r\n            <DecisionNotification xmlns=\"http://www.hmrc.gov.uk/webservices/itsw/ws/decisionnotification\">\r\n                <ServiceHeader>\r\n                    <SourceSystem>ALVS</SourceSystem>\r\n                    <DestinationSystem>CDS</DestinationSystem>\r\n                    <CorrelationId>000</CorrelationId>\r\n                    <ServiceCallTimestamp>2023-06-30T07:34:14.405827</ServiceCallTimestamp>\r\n                </ServiceHeader>\r\n                <Header>\r\n                    <EntryReference>23GB1234567890ABC8</EntryReference>\r\n                    <EntryVersionNumber>1</EntryVersionNumber>\r\n                    <DecisionNumber>1</DecisionNumber>\r\n                </Header>\r\n                <Item>\r\n                    <ItemNumber>1</ItemNumber>\r\n                    <Check>\r\n                        <CheckCode>H218</CheckCode>\r\n                        <DecisionCode>X00</DecisionCode>\r\n                        <DecisionValidUntil>202307042359</DecisionValidUntil>\r\n                    </Check>                   \r\n                </Item>               \r\n            </DecisionNotification>\r\n        </DecisionNotification>\r\n    </soap:Body>\r\n</soap:Envelope>";
+    private const string Decision1 =
+        @"<?xml version=""1.0"" encoding=""utf-8""?>
+            <soap:Envelope xmlns:soap=""http://www.w3.org/2003/05/soap-envelope"">
+                <soap:Header>
+                    <oas:Security soap:role=""system"" soap:mustUnderstand=""true"" xmlns:oas=""http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"">
+                        <oas:UsernameToken>
+                            <oas:Username>ibmtest</oas:Username>
+                            <oas:Password>password</oas:Password>
+                        </oas:UsernameToken>
+                    </oas:Security>
+                </soap:Header>
+                <soap:Body>
+                    <DecisionNotification xmlns=""http://uk.gov.hmrc.ITSW2.ws"">
+                    <DecisionNotification xmlns=""http://www.hmrc.gov.uk/webservices/itsw/ws/decisionnotification"">
+                        <ServiceHeader>
+                            <SourceSystem>ALVS</SourceSystem>
+                            <DestinationSystem>CDS</DestinationSystem>
+                            <CorrelationId>000</CorrelationId>
+                            <ServiceCallTimestamp>2023-06-30T07:34:14.405827</ServiceCallTimestamp>
+                        </ServiceHeader>
+                        <Header>
+                            <EntryReference>23GB1234567890ABC8</EntryReference>
+                            <EntryVersionNumber>1</EntryVersionNumber>
+                            <DecisionNumber>1</DecisionNumber>
+                        </Header>
+                        <Item>
+                            <ItemNumber>1</ItemNumber>
+                            <Check>
+                                <CheckCode>H218</CheckCode>
+                                <DecisionCode>X00</DecisionCode>
+                                <DecisionValidUntil>202307042359</DecisionValidUntil>
+                            </Check>
+                        </Item>
+                    </DecisionNotification>
+                    </DecisionNotification>
+                </soap:Body>
+        </soap:Envelope>";
 
-    private const string decision2 =
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\">\r\n    <soap:Header>\r\n       <oas:Security soap:role=\"system\" soap:mustUnderstand=\"true\" xmlns:oas=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">\r\n            <oas:UsernameToken>\r\n                <oas:Username>ibmtest</oas:Username>\r\n                <oas:Password>password</oas:Password>\r\n            </oas:UsernameToken>\r\n        </oas:Security>\r\n    </soap:Header>\r\n    <soap:Body>\r\n        <DecisionNotification xmlns=\"http://uk.gov.hmrc.ITSW2.ws\">\r\n            <DecisionNotification xmlns=\"http://www.hmrc.gov.uk/webservices/itsw/ws/decisionnotification\">\r\n                <ServiceHeader>\r\n                    <SourceSystem>ALVS</SourceSystem>\r\n                    <DestinationSystem>CDS</DestinationSystem>\r\n                    <CorrelationId>000</CorrelationId>\r\n                    <ServiceCallTimestamp>2023-06-30T07:34:14.405827</ServiceCallTimestamp>\r\n                </ServiceHeader>\r\n                <Header>\r\n                    <EntryReference>23GB1234567890ABC8</EntryReference>\r\n                    <EntryVersionNumber>1</EntryVersionNumber>\r\n                    <DecisionNumber>1</DecisionNumber>\r\n                </Header>\r\n                <Item>\r\n                    <ItemNumber>1</ItemNumber>\r\n                    <Check>\r\n                        <CheckCode>H218</CheckCode>\r\n                        <DecisionCode>C02</DecisionCode>\r\n                        <DecisionValidUntil>202307042359</DecisionValidUntil>\r\n                    </Check>                   \r\n                </Item>               \r\n            </DecisionNotification>\r\n        </DecisionNotification>\r\n    </soap:Body>\r\n</soap:Envelope>";
+    private const string Decision2 =
+        @"<?xml version=""1.0"" encoding=""utf-8""?>
+            <soap:Envelope xmlns:soap=""http://www.w3.org/2003/05/soap-envelope"">
+                <soap:Header>
+                    <oas:Security soap:role=""system"" soap:mustUnderstand=""true"" xmlns:oas=""http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"">
+                        <oas:UsernameToken>
+                            <oas:Username>ibmtest</oas:Username>
+                            <oas:Password>password</oas:Password>
+                        </oas:UsernameToken>
+                    </oas:Security>
+                </soap:Header>
+                <soap:Body>
+                    <DecisionNotification xmlns=""http://uk.gov.hmrc.ITSW2.ws"">
+                    <DecisionNotification xmlns=""http://www.hmrc.gov.uk/webservices/itsw/ws/decisionnotification"">
+                        <ServiceHeader>
+                            <SourceSystem>ALVS</SourceSystem>
+                            <DestinationSystem>CDS</DestinationSystem>
+                            <CorrelationId>000</CorrelationId>
+                            <ServiceCallTimestamp>2023-06-30T07:34:14.405827</ServiceCallTimestamp>
+                        </ServiceHeader>
+                        <Header>
+                            <EntryReference>23GB1234567890ABC8</EntryReference>
+                            <EntryVersionNumber>1</EntryVersionNumber>
+                            <DecisionNumber>1</DecisionNumber>
+                        </Header>
+                        <Item>
+                            <ItemNumber>1</ItemNumber>
+                            <Check>
+                                <CheckCode>H218</CheckCode>
+                                <DecisionCode>C02</DecisionCode>
+                                <DecisionValidUntil>202307042359</DecisionValidUntil>
+                            </Check>
+                        </Item>
+                    </DecisionNotification>
+                    </DecisionNotification>
+                </soap:Body>
+        </soap:Envelope>";
 
-    private const string decision3 =
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\">\r\n    <soap:Header>\r\n       <oas:Security soap:role=\"system\" soap:mustUnderstand=\"true\" xmlns:oas=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">\r\n            <oas:UsernameToken>\r\n                <oas:Username>ibmtest</oas:Username>\r\n                <oas:Password>password</oas:Password>\r\n            </oas:UsernameToken>\r\n        </oas:Security>\r\n    </soap:Header>\r\n    <soap:Body>\r\n        <DecisionNotification xmlns=\"http://uk.gov.hmrc.ITSW2.ws\">\r\n            <DecisionNotification xmlns=\"http://www.hmrc.gov.uk/webservices/itsw/ws/decisionnotification\">\r\n                <ServiceHeader>\r\n                    <SourceSystem>ALVS</SourceSystem>\r\n                    <DestinationSystem>CDS</DestinationSystem>\r\n                    <CorrelationId>000</CorrelationId>\r\n                    <ServiceCallTimestamp>2023-06-30T07:34:14.405827</ServiceCallTimestamp>\r\n                </ServiceHeader>\r\n                <Header>\r\n                    <EntryReference>23GB1234567890ABC8</EntryReference>\r\n                    <EntryVersionNumber>1</EntryVersionNumber>\r\n                    <DecisionNumber>1</DecisionNumber>\r\n                </Header>\r\n                <Item>\r\n                    <ItemNumber>1</ItemNumber>\r\n                    <Check>\r\n                        <CheckCode>H218</CheckCode>\r\n                        <DecisionCode>C03</DecisionCode>\r\n                        <DecisionValidUntil>202307042359</DecisionValidUntil>\r\n                    </Check>                   \r\n                </Item>               \r\n            </DecisionNotification>\r\n        </DecisionNotification>\r\n    </soap:Body>\r\n</soap:Envelope>";
+    private const string Decision3 =
+        @"<?xml version=""1.0"" encoding=""utf-8""?>
+            <soap:Envelope xmlns:soap=""http://www.w3.org/2003/05/soap-envelope"">
+                <soap:Header>
+                    <oas:Security soap:role=""system"" soap:mustUnderstand=""true"" xmlns:oas=""http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"">
+                        <oas:UsernameToken>
+                            <oas:Username>ibmtest</oas:Username>
+                            <oas:Password>password</oas:Password>
+                        </oas:UsernameToken>
+                    </oas:Security>
+                </soap:Header>
+                <soap:Body>
+                    <DecisionNotification xmlns=""http://uk.gov.hmrc.ITSW2.ws"">
+                    <DecisionNotification xmlns=""http://www.hmrc.gov.uk/webservices/itsw/ws/decisionnotification"">
+                        <ServiceHeader>
+                            <SourceSystem>ALVS</SourceSystem>
+                            <DestinationSystem>CDS</DestinationSystem>
+                            <CorrelationId>000</CorrelationId>
+                            <ServiceCallTimestamp>2023-06-30T07:34:14.405827</ServiceCallTimestamp>
+                        </ServiceHeader>
+                        <Header>
+                            <EntryReference>23GB1234567890ABC8</EntryReference>
+                            <EntryVersionNumber>1</EntryVersionNumber>
+                            <DecisionNumber>1</DecisionNumber>
+                        </Header>
+                        <Item>
+                            <ItemNumber>1</ItemNumber>
+                            <Check>
+                                <CheckCode>H218</CheckCode>
+                                <DecisionCode>C03</DecisionCode>
+                                <DecisionValidUntil>202307042359</DecisionValidUntil>
+                            </Check>
+                        </Item>
+                    </DecisionNotification>
+                    </DecisionNotification>
+                </soap:Body>
+        </soap:Envelope>";
 
     [Fact]
     public async Task WhenNoComparisons_ShouldBeNullResults()
@@ -36,7 +141,7 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
             JsonSerializer.Deserialize<ParityProjection>(content, s_options)
             ?? throw new Exception("Failed to deserialize");
         result.MisMatchMrns.Should().BeNullOrEmpty();
-        result.Stats.Should().BeNullOrEmpty();
+        result.ParityStats.Should().BeNullOrEmpty();
     }
 
     [Fact]
@@ -45,9 +150,9 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
         await DrainAllMessages();
         var client = CreateClient();
         var start = DateTime.UtcNow;
-        await InsertDecisionsForMrn("parity-mrn1", decision1, decision1);
-        await InsertDecisionsForMrn("parity-mrn2", decision2, decision3);
-        await InsertDecisionsForMrn("parity-mrn3", decision2, decision1);
+        await InsertDecisionsForMrn("parity-mrn1", Decision1, Decision1);
+        await InsertDecisionsForMrn("parity-mrn2", Decision2, Decision3);
+        await InsertDecisionsForMrn("parity-mrn3", Decision2, Decision1);
 
         var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(start, null));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -58,10 +163,10 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
             ?? throw new Exception("Failed to deserialize");
         result.MisMatchMrns.Count.Should().Be(1);
         result.MisMatchMrns[0].Should().Be("parity-mrn3");
-        result.Stats.Count.Should().Be(3);
-        result.Stats["ExactMatch"].Should().Be(1);
-        result.Stats["Mismatch"].Should().Be(1);
-        result.Stats["GroupMatch"].Should().Be(1);
+        result.ParityStats.Count.Should().Be(3);
+        result.ParityStats["ExactMatch"].Should().Be(1);
+        result.ParityStats["Mismatch"].Should().Be(1);
+        result.ParityStats["GroupMatch"].Should().Be(1);
     }
 
     [Fact]
@@ -70,11 +175,12 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
         await DrainAllMessages();
         var client = CreateClient();
         var start = DateTime.UtcNow;
-        await InsertDecisionsForMrn("parity-mrn4", decision1, decision1, false);
-        await InsertDecisionsForMrn("parity-mrn5", decision2, decision3, false);
-        await InsertDecisionsForMrn("parity-mrn6", decision1, decision1, false);
-        await InsertDecisionsForMrn("parity-mrn7", decision2, decision1, false);
-        await InsertDecisionsForMrn("parity-mrn8", decision2, decision1);
+
+        await InsertDecisionsForMrn("parity-mrn4", Decision1, Decision1, false);
+        await InsertDecisionsForMrn("parity-mrn5", Decision2, Decision3, false);
+        await InsertDecisionsForMrn("parity-mrn6", Decision1, Decision1, false);
+        await InsertDecisionsForMrn("parity-mrn7", Decision2, Decision1, false);
+        await InsertDecisionsForMrn("parity-mrn8", Decision2, Decision1);
 
         var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(start, null, false));
         var content = await response.Content.ReadAsStringAsync();
@@ -84,10 +190,36 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
 
         result.MisMatchMrns.Count.Should().Be(1);
         result.MisMatchMrns[0].Should().Be("parity-mrn7");
-        result.Stats.Count.Should().Be(3);
-        result.Stats["ExactMatch"].Should().Be(2);
-        result.Stats["Mismatch"].Should().Be(1);
-        result.Stats["GroupMatch"].Should().Be(1);
+        result.ParityStats.Count.Should().Be(3);
+        result.ParityStats["ExactMatch"].Should().Be(2);
+        result.ParityStats["Mismatch"].Should().Be(1);
+        result.ParityStats["GroupMatch"].Should().Be(1);
+    }
+
+    [Fact]
+    public async Task WhenParityExists_AndWhenDecisionNumberParityExists_ItIsIncludedInTheResults()
+    {
+        await DrainAllMessages();
+        var client = CreateClient();
+        var start = DateTime.UtcNow;
+
+        var nonMatchingDecision1 = Decision1.Replace(
+            "<DecisionNumber>1</DecisionNumber>",
+            "<DecisionNumber>2</DecisionNumber>"
+        );
+
+        await InsertDecisionsForMrn("parity-mrn1", Decision1, nonMatchingDecision1, false);
+        await InsertDecisionsForMrn("parity-mrn2", Decision1, Decision1, false);
+
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(start, null, false));
+        var content = await response.Content.ReadAsStringAsync();
+        var result =
+            JsonSerializer.Deserialize<ParityProjection>(content, s_options)
+            ?? throw new Exception("Failed to deserialize");
+
+        result.DecisionNumberStats["Mismatch"].Should().Be(1);
+        result.DecisionNumberStats["ExactMatch"].Should().Be(1);
+        result.MisMatchDecisionNumberMrns[0].Should().Be("parity-mrn1");
     }
 
     private async Task InsertDecisionsForMrn(
