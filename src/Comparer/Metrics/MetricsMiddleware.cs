@@ -8,7 +8,7 @@ public class MetricsMiddleware(RequestMetrics requestMetrics) : IMiddleware
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var startingTimestamp = TimeProvider.System.GetTimestamp();
-        var path = (context.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText ?? context.Request.Path;
+        var path = (context.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText ?? "unknown";
         try
         {
             await next(context);
