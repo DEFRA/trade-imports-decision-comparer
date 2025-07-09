@@ -53,10 +53,22 @@ public record Comparison(
             return null;
         }
 
-        var alvsDecisionNumber = Header.FromXml(alvsXml).DecisionNumber;
-        var btmsDecisionNumber = Header.FromXml(btmsXml).DecisionNumber;
+        var alvsHeader = Header.FromXml(alvsXml);
+        var btmsHeader = Header.FromXml(btmsXml);
 
-        return alvsDecisionNumber != null && btmsDecisionNumber != null && alvsDecisionNumber == btmsDecisionNumber
+        if (
+            alvsHeader.EntryVersionNumber == null
+            || btmsHeader.EntryVersionNumber == null
+            || alvsHeader.EntryVersionNumber != btmsHeader.EntryVersionNumber
+        )
+        {
+            return null;
+        }
+
+        return
+            alvsHeader.DecisionNumber != null
+            && btmsHeader.DecisionNumber != null
+            && alvsHeader.DecisionNumber == btmsHeader.DecisionNumber
             ? DecisionNumberMatch.ExactMatch
             : DecisionNumberMatch.Mismatch;
     }

@@ -154,6 +154,19 @@ public class ComparisonTests
     }
 
     [Fact]
+    public void WhenDecisionsMatch_ButTheEntryVersionNumberIsDifferent_ThenDecisionNumberMatchedShouldBeNull()
+    {
+        var btmsDecision = SampleDecision.Replace(
+            "&lt;NS2:EntryVersionNumber&gt;3&lt",
+            "&lt;NS2:EntryVersionNumber&gt;2&lt"
+        );
+
+        var result = Comparison.Create(SampleDecision, btmsDecision, null);
+
+        result.DecisionNumberMatched.Should().BeNull();
+    }
+
+    [Fact]
     public void WhenGivenDecisionToCompare_WhichDoesNotIncludeAFinalisation_IsFinalisationShouldBeFalse()
     {
         var result = Comparison.Create(SampleDecision, SampleDecision, null);
