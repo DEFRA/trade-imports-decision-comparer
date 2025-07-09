@@ -9,9 +9,20 @@ namespace Defra.TradeImportsDecisionComparer.Comparer.Services;
 [ExcludeFromCodeCoverage] // see integration tests
 public class ParityService(IDbContext dbContext) : IParityService
 {
-    public async Task<ParityProjection> Get(DateTime? start, DateTime? end, CancellationToken cancellationToken)
+    public async Task<ParityProjection> Get(
+        DateTime? start,
+        DateTime? end,
+        bool isFinalisation,
+        CancellationToken cancellationToken
+    )
     {
         var query = from c in dbContext.Comparisons select c;
+
+        query = isFinalisation switch
+        {
+            true => from c in query where c.Latest.IsFinalisation == true || c.Latest.IsFinalisation == null select c,
+            false => from c in query where c.Latest.IsFinalisation == false select c,
+        };
 
         if (start.HasValue)
         {

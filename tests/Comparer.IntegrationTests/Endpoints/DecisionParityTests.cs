@@ -64,7 +64,38 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
         result.Stats["GroupMatch"].Should().Be(1);
     }
 
-    private async Task InsertDecisionsForMrn(string mrn, string alvsDecisionXml, string btmsDecisionXml)
+    [Fact]
+    public async Task WhenParityExists_AndIsFinalisationIsFalse_ItOnlyCalculatesParityForNonFinalisedRecords()
+    {
+        await DrainAllMessages();
+        var client = CreateClient();
+        var start = DateTime.UtcNow;
+        await InsertDecisionsForMrn("parity-mrn4", decision1, decision1, false);
+        await InsertDecisionsForMrn("parity-mrn5", decision2, decision3, false);
+        await InsertDecisionsForMrn("parity-mrn6", decision1, decision1, false);
+        await InsertDecisionsForMrn("parity-mrn7", decision2, decision1, false);
+        await InsertDecisionsForMrn("parity-mrn8", decision2, decision1);
+
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(start, null, false));
+        var content = await response.Content.ReadAsStringAsync();
+        var result =
+            JsonSerializer.Deserialize<ParityProjection>(content, s_options)
+            ?? throw new Exception("Failed to deserialize");
+
+        result.MisMatchMrns.Count.Should().Be(1);
+        result.MisMatchMrns[0].Should().Be("parity-mrn7");
+        result.Stats.Count.Should().Be(3);
+        result.Stats["ExactMatch"].Should().Be(2);
+        result.Stats["Mismatch"].Should().Be(1);
+        result.Stats["GroupMatch"].Should().Be(1);
+    }
+
+    private async Task InsertDecisionsForMrn(
+        string mrn,
+        string alvsDecisionXml,
+        string btmsDecisionXml,
+        bool isFinalisation = true
+    )
     {
         var client = CreateClient();
 
@@ -89,12 +120,14 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
             Operation = "Update",
             Resource = new CustomsDeclaration
             {
-                Finalisation = new Finalisation
-                {
-                    FinalState = "3",
-                    ExternalVersion = 1,
-                    IsManualRelease = false,
-                },
+                Finalisation = isFinalisation
+                    ? new Finalisation
+                    {
+                        FinalState = "3",
+                        ExternalVersion = 1,
+                        IsManualRelease = false,
+                    }
+                    : null,
             },
         };
 

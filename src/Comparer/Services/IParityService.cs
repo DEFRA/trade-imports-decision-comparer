@@ -4,5 +4,10 @@ namespace Defra.TradeImportsDecisionComparer.Comparer.Services;
 
 public interface IParityService
 {
-    Task<ParityProjection> Get(DateTime? start, DateTime? end, CancellationToken cancellationToken);
+    Task<ParityProjection> Get(
+        DateTime? start,
+        DateTime? end,
+        bool isFinalisation,
+        CancellationToken cancellationToken
+    );
 }

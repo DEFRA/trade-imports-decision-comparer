@@ -46,7 +46,7 @@ public class ParityTests(ComparerWebApplicationFactory factory, ITestOutputHelpe
     {
         var client = CreateClient();
         MockParityService
-            .Get(null, null, Arg.Any<CancellationToken>())
+            .Get(null, null, true, Arg.Any<CancellationToken>())
             .Returns(
                 new ParityProjection(new Dictionary<string, int> { { nameof(ComparisionOutcome.Mismatch), 3 } }, [Mrn])
             );
@@ -59,5 +59,22 @@ public class ParityTests(ComparerWebApplicationFactory factory, ITestOutputHelpe
             .UseStrictJson()
             .DontIgnoreEmptyCollections()
             .DontScrubDateTimes();
+    }
+
+    [Fact]
+    public async Task Get_WithIsFinalisationFalse_ShouldQueryWithIsFinalisationFalse()
+    {
+        var client = CreateClient();
+        MockParityService
+            .Get(null, null, false, Arg.Any<CancellationToken>())
+            .Returns(
+                new ParityProjection(new Dictionary<string, int> { { nameof(ComparisionOutcome.Mismatch), 3 } }, [Mrn])
+            );
+
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(null, null, false));
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        await MockParityService.Received(1).Get(null, null, false, Arg.Any<CancellationToken>());
     }
 }
