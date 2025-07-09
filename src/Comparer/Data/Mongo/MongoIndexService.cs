@@ -14,6 +14,12 @@ public class MongoIndexService(IMongoDatabase database, ILogger<MongoIndexServic
             Builders<ComparisonEntity>.IndexKeys.Ascending(x => x.Updated),
             cancellationToken: cancellationToken
         );
+
+        await CreateIndex(
+            "UpdatedIdx",
+            Builders<OutboundErrorComparisonEntity>.IndexKeys.Ascending(x => x.Updated),
+            cancellationToken: cancellationToken
+        );
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
