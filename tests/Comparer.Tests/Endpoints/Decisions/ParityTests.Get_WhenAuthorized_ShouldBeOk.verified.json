@@ -1,8 +1,14 @@
 ﻿{
-  "stats": {
+  "parityStats": {
+    "Mismatch": 3
+  },
+  "decisionNumberStats": {
     "Mismatch": 3
   },
   "misMatchMrns": [
+    "mrn"
+  ],
+  "misMatchDecisionNumberMrns": [
     "mrn"
   ]
 }

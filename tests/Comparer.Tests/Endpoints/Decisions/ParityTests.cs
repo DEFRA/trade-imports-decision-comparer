@@ -48,7 +48,12 @@ public class ParityTests(ComparerWebApplicationFactory factory, ITestOutputHelpe
         MockParityService
             .Get(null, null, true, Arg.Any<CancellationToken>())
             .Returns(
-                new ParityProjection(new Dictionary<string, int> { { nameof(ComparisionOutcome.Mismatch), 3 } }, [Mrn])
+                new ParityProjection(
+                    new Dictionary<string, int> { { nameof(ComparisionOutcome.Mismatch), 3 } },
+                    new Dictionary<string, int> { { nameof(DecisionNumberMatch.Mismatch), 3 } },
+                    [Mrn],
+                    [Mrn]
+                )
             );
 
         var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(null, null));
@@ -68,7 +73,12 @@ public class ParityTests(ComparerWebApplicationFactory factory, ITestOutputHelpe
         MockParityService
             .Get(null, null, false, Arg.Any<CancellationToken>())
             .Returns(
-                new ParityProjection(new Dictionary<string, int> { { nameof(ComparisionOutcome.Mismatch), 3 } }, [Mrn])
+                new ParityProjection(
+                    new Dictionary<string, int> { { nameof(ComparisionOutcome.Mismatch), 3 } },
+                    new Dictionary<string, int>(),
+                    [Mrn],
+                    []
+                )
             );
 
         var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(null, null, false));

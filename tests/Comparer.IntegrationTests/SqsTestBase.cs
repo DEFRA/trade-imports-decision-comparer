@@ -41,7 +41,11 @@ public class SqsTestBase(ITestOutputHelper output) : IntegrationTestBase
 
     protected async Task WaitOnMessagesBeingProcessed()
     {
-        await AsyncWaiter.WaitForAsync(async () => (await GetQueueAttributes()).ApproximateNumberOfMessages == 0);
+        await AsyncWaiter.WaitForAsync(async () =>
+        {
+            await Task.Delay(500);
+            return (await GetQueueAttributes()).ApproximateNumberOfMessages == 0;
+        });
     }
 
     protected async Task SendMessage(string body, Dictionary<string, MessageAttributeValue>? messageAttributes = null)
