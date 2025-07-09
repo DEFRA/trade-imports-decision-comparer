@@ -16,6 +16,7 @@ public class MongoDbContext : IDbContext
         AlvsDecisions = new MongoCollectionSet<AlvsDecisionEntity>(this);
         BtmsDecisions = new MongoCollectionSet<BtmsDecisionEntity>(this);
         Comparisons = new MongoCollectionSet<ComparisonEntity>(this);
+        OutboundErrorComparisons = new MongoCollectionSet<OutboundErrorComparisonEntity>(this);
         AlvsOutboundErrors = new MongoCollectionSet<AlvsOutboundErrorEntity>(this);
         BtmsOutboundErrors = new MongoCollectionSet<BtmsOutboundErrorEntity>(this);
     }
@@ -26,6 +27,7 @@ public class MongoDbContext : IDbContext
     public IMongoCollectionSet<AlvsDecisionEntity> AlvsDecisions { get; }
     public IMongoCollectionSet<BtmsDecisionEntity> BtmsDecisions { get; }
     public IMongoCollectionSet<ComparisonEntity> Comparisons { get; }
+    public IMongoCollectionSet<OutboundErrorComparisonEntity> OutboundErrorComparisons { get; }
     public IMongoCollectionSet<AlvsOutboundErrorEntity> AlvsOutboundErrors { get; }
     public IMongoCollectionSet<BtmsOutboundErrorEntity> BtmsOutboundErrors { get; }
 
@@ -71,6 +73,7 @@ public class MongoDbContext : IDbContext
         return AlvsDecisions.PendingChanges
             + BtmsDecisions.PendingChanges
             + Comparisons.PendingChanges
+            + OutboundErrorComparisons.PendingChanges
             + AlvsOutboundErrors.PendingChanges
             + BtmsOutboundErrors.PendingChanges;
     }
@@ -83,6 +86,7 @@ public class MongoDbContext : IDbContext
             await AlvsDecisions.PersistAsync(cancellationToken);
             await BtmsDecisions.PersistAsync(cancellationToken);
             await Comparisons.PersistAsync(cancellationToken);
+            await OutboundErrorComparisons.PersistAsync(cancellationToken);
             await AlvsOutboundErrors.PersistAsync(cancellationToken);
             await BtmsOutboundErrors.PersistAsync(cancellationToken);
         }

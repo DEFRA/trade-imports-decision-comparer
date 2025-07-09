@@ -7,8 +7,11 @@ using Defra.TradeImportsDecisionComparer.Comparer.Extensions;
 namespace Defra.TradeImportsDecisionComparer.Comparer.Services;
 
 [ExcludeFromCodeCoverage] // see integration tests
-public class ComparisonManager(IDecisionService decisionService, IComparisonService comparisonService)
-    : IComparisonManager
+public class ComparisonManager(
+    IDecisionService decisionService,
+    IComparisonService comparisonService,
+    IOutboundErrorService outboundErrorService
+) : IComparisonManager
 {
     public async Task CreateUpdateComparisonEntity(
         string mrn,
@@ -27,6 +30,29 @@ public class ComparisonManager(IDecisionService decisionService, IComparisonServ
         if (comparisonEntity is null)
         {
             comparisonEntity = new ComparisonEntity { Id = mrn, Latest = comparison };
+        }
+        else
+        {
+            comparisonEntity.History.Add(comparisonEntity.Latest);
+            comparisonEntity.Latest = comparison;
+        }
+
+        await comparisonService.Save(comparisonEntity, cancellationToken);
+    }
+
+    public async Task CompareLatestOutboundErrors(string mrn, CancellationToken cancellationToken)
+    {
+        var alvsOutboundError = await outboundErrorService.GetAlvsOutboundError(mrn, cancellationToken);
+        var btmsOutboundError = await outboundErrorService.GetBtmsOutboundError(mrn, cancellationToken);
+        var latestAlvs = alvsOutboundError?.Errors.OrderBy(x => x.Xml.GetErrorEntryVersionNumber()).LastOrDefault();
+        var latestBtms = btmsOutboundError?.Errors.OrderBy(x => x.Xml.GetErrorEntryVersionNumber()).LastOrDefault();
+
+        var comparison = OutboundErrorComparison.Create(latestAlvs?.Xml, latestBtms?.Xml);
+        var comparisonEntity = await comparisonService.GetOutboundError(mrn, cancellationToken);
+
+        if (comparisonEntity is null)
+        {
+            comparisonEntity = new OutboundErrorComparisonEntity { Id = mrn, Latest = comparison };
         }
         else
         {

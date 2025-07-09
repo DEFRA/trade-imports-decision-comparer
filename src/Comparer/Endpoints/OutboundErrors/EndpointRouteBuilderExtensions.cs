@@ -14,6 +14,8 @@ public static class EndpointRouteBuilderExtensions
         app.MapPut("alvs-outbound-errors/{mrn}/", PutAlvs).RequireAuthorization(PolicyNames.Write);
         app.MapPut("btms-outbound-errors/{mrn}/", PutBtms).RequireAuthorization(PolicyNames.Write);
         app.MapGet("outbound-errors/{mrn}/", Get).RequireAuthorization(PolicyNames.Read);
+        app.MapGet("outbound-errors/{mrn}/comparison", GetComparison).RequireAuthorization(PolicyNames.Read);
+        app.MapGet("outbound-errors/parity", GetParity).RequireAuthorization(PolicyNames.Read);
     }
 
     [HttpPut]
@@ -21,11 +23,16 @@ public static class EndpointRouteBuilderExtensions
         [FromRoute] string mrn,
         HttpContext context,
         [FromServices] IOutboundErrorService outboundErrorService,
+        [FromServices] IComparisonManager comparisonManager,
         CancellationToken cancellationToken
     ) =>
         await ReadAndSave(
             context,
-            (d, ct) => outboundErrorService.AppendAlvsOutboundError(mrn, d, ct),
+            async (outboundError, ct) =>
+            {
+                await outboundErrorService.AppendAlvsOutboundError(mrn, outboundError, ct);
+                await comparisonManager.CompareLatestOutboundErrors(mrn, ct);
+            },
             cancellationToken
         );
 
@@ -34,11 +41,16 @@ public static class EndpointRouteBuilderExtensions
         [FromRoute] string mrn,
         HttpContext context,
         [FromServices] IOutboundErrorService outboundErrorService,
+        [FromServices] IComparisonManager comparisonManager,
         CancellationToken cancellationToken
     ) =>
         await ReadAndSave(
             context,
-            (d, ct) => outboundErrorService.AppendBtmsOutboundError(mrn, d, ct),
+            async (outboundError, ct) =>
+            {
+                await outboundErrorService.AppendBtmsOutboundError(mrn, outboundError, ct);
+                await comparisonManager.CompareLatestOutboundErrors(mrn, ct);
+            },
             cancellationToken
         );
 
@@ -53,6 +65,31 @@ public static class EndpointRouteBuilderExtensions
         var btmsOutboundError = await outboundErrorService.GetBtmsOutboundError(mrn, cancellationToken);
 
         return Results.Ok(new { alvsOutboundError, btmsOutboundError });
+    }
+
+    [HttpGet]
+    private static async Task<IResult> GetComparison(
+        [FromRoute] string mrn,
+        [FromServices] IComparisonService comparisonService,
+        CancellationToken cancellationToken
+    )
+    {
+        var comparison = await comparisonService.GetOutboundError(mrn, cancellationToken);
+
+        return Results.Ok(comparison);
+    }
+
+    [HttpGet]
+    private static async Task<IResult> GetParity(
+        [FromQuery] DateTime? start,
+        [FromQuery] DateTime? end,
+        [FromServices] IParityService parityService,
+        CancellationToken cancellationToken
+    )
+    {
+        var parity = await parityService.GetOutboundError(start, end, cancellationToken);
+
+        return Results.Ok(parity);
     }
 
     [SuppressMessage("SonarLint", "S5131", Justification = "This service cannot be compromised by a malicious user")]

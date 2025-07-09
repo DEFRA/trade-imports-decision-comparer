@@ -10,6 +10,8 @@ public interface IDbContext
 
     IMongoCollectionSet<ComparisonEntity> Comparisons { get; }
 
+    IMongoCollectionSet<OutboundErrorComparisonEntity> OutboundErrorComparisons { get; }
+
     IMongoCollectionSet<AlvsOutboundErrorEntity> AlvsOutboundErrors { get; }
 
     IMongoCollectionSet<BtmsOutboundErrorEntity> BtmsOutboundErrors { get; }

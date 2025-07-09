@@ -56,6 +56,25 @@ public static class Endpoints
 
         public static string Get(string mrn) => $"{Root()}/{mrn}";
 
+        public static string Comparison(string mrn) => $"{Get(mrn)}/comparison";
+
+        public static string Parity(DateTime? start, DateTime? end)
+        {
+            var queryString = QueryString.Empty;
+
+            if (start.HasValue)
+            {
+                queryString = queryString.Add(nameof(start), start.Value.ToString("O", CultureInfo.InvariantCulture));
+            }
+
+            if (end.HasValue)
+            {
+                queryString = queryString.Add(nameof(end), end.Value.ToString("O", CultureInfo.InvariantCulture));
+            }
+
+            return $"{Root()}/parity{queryString.Value}";
+        }
+
         public static class Alvs
         {
             private static string AlvsPrefix => nameof(Alvs).ToLower() + "-";

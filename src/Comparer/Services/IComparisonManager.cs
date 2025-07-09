@@ -9,4 +9,6 @@ public interface IComparisonManager
         Finalisation? finalisation,
         CancellationToken cancellationToken
     );
+
+    public Task CompareLatestOutboundErrors(string mrn, CancellationToken cancellationToken);
 }
