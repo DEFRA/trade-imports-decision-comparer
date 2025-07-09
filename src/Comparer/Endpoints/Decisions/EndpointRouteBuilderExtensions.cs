@@ -63,10 +63,11 @@ public static class EndpointRouteBuilderExtensions
         [FromQuery] DateTime? start,
         [FromQuery] DateTime? end,
         [FromServices] IParityService parityService,
-        CancellationToken cancellationToken
+        [FromQuery] bool? isFinalisation = true,
+        CancellationToken cancellationToken = default
     )
     {
-        var parity = await parityService.Get(start, end, cancellationToken);
+        var parity = await parityService.Get(start, end, isFinalisation != false, cancellationToken);
 
         return Results.Ok(parity);
     }

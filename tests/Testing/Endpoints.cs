@@ -13,7 +13,7 @@ public static class Endpoints
 
         public static string Comparison(string mrn) => $"{Get(mrn)}/comparison";
 
-        public static string Parity(DateTime? start, DateTime? end)
+        public static string Parity(DateTime? start, DateTime? end, bool? isFinalisation = true)
         {
             var queryString = QueryString.Empty;
 
@@ -25,6 +25,11 @@ public static class Endpoints
             if (end.HasValue)
             {
                 queryString = queryString.Add(nameof(end), end.Value.ToString("O", CultureInfo.InvariantCulture));
+            }
+
+            if (isFinalisation.HasValue)
+            {
+                queryString = queryString.Add(nameof(isFinalisation), isFinalisation.Value.ToString());
             }
 
             return $"{Root()}/parity{queryString.Value}";
