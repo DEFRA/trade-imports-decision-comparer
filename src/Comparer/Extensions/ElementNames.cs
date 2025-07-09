@@ -6,6 +6,7 @@ public static class ElementNames
 {
     public static readonly string Namespace = "http://www.hmrc.gov.uk/webservices/itsw/ws/decisionnotification";
     public static readonly XName ServiceHeader = XName.Get(nameof(ServiceHeader), Namespace);
+    public static readonly XName EntryVersionNumber = XName.Get(nameof(EntryVersionNumber), Namespace);
     public static readonly XName ServiceCallTimestamp = XName.Get(nameof(ServiceCallTimestamp), Namespace);
     public static readonly XName DecisionNotification = XName.Get(nameof(DecisionNotification), Namespace);
     public static readonly XName Item = XName.Get(nameof(Item), Namespace);
