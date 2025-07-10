@@ -26,16 +26,16 @@ public static class EndpointRouteBuilderExtensions
         [FromServices] IDecisionService decisionService,
         [FromServices] IComparisonManager comparisonManager,
         CancellationToken cancellationToken
-    )
-    {
-        var result = await ReadAndSave(
+    ) =>
+        await ReadAndSave(
             context,
-            (d, ct) => decisionService.AppendAlvsDecision(mrn, d, ct),
+            async (decision, ct) =>
+            {
+                await decisionService.AppendAlvsDecision(mrn, decision, ct);
+                await comparisonManager.CompareLatestDecisions(mrn, null, ct);
+            },
             cancellationToken
         );
-        await comparisonManager.CreateUpdateComparisonEntity(mrn, null, cancellationToken);
-        return result;
-    }
 
     [HttpPut]
     private static async Task<IResult> PutBtms(

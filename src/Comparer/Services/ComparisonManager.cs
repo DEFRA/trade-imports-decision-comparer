@@ -13,7 +13,7 @@ public class ComparisonManager(
     IOutboundErrorService outboundErrorService
 ) : IComparisonManager
 {
-    public async Task CreateUpdateComparisonEntity(
+    public async Task CompareLatestDecisions(
         string mrn,
         Finalisation? finalisation,
         CancellationToken cancellationToken
