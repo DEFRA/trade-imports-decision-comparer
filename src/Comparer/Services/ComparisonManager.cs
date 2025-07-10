@@ -43,9 +43,14 @@ public class ComparisonManager(
     public async Task CompareLatestOutboundErrors(string mrn, CancellationToken cancellationToken)
     {
         var alvsOutboundError = await outboundErrorService.GetAlvsOutboundError(mrn, cancellationToken);
+        OutboundError? latestAlvs = null;
+        if (alvsOutboundError?.Errors.Count > 0)
+            latestAlvs = alvsOutboundError.Errors.OrderBy(x => x.Xml.GetErrorEntryVersionNumber()).LastOrDefault();
+
         var btmsOutboundError = await outboundErrorService.GetBtmsOutboundError(mrn, cancellationToken);
-        var latestAlvs = alvsOutboundError?.Errors.OrderBy(x => x.Xml.GetErrorEntryVersionNumber()).LastOrDefault();
-        var latestBtms = btmsOutboundError?.Errors.OrderBy(x => x.Xml.GetErrorEntryVersionNumber()).LastOrDefault();
+        OutboundError? latestBtms = null;
+        if (btmsOutboundError?.Errors.Count > 0)
+            latestBtms = btmsOutboundError.Errors.OrderBy(x => x.Xml.GetErrorEntryVersionNumber()).LastOrDefault();
 
         var comparison = OutboundErrorComparison.Create(latestAlvs?.Xml, latestBtms?.Xml);
         var comparisonEntity = await comparisonService.GetOutboundError(mrn, cancellationToken);
