@@ -47,6 +47,24 @@ public class ParityService(IDbContext dbContext) : IParityService
             group c by c.Latest.DecisionNumberMatched.ToString() into grp
             select new { grp.Key, Count = grp.Count() };
 
+        var countWhereAlvsRespondedFirstQuery =
+            from c in query
+            where
+                c.Latest.DecisionNumberMatched == DecisionNumberMatch.ExactMatch
+                && c.Latest.BtmsTimestamp.HasValue
+                && c.Latest.AlvsTimestamp.HasValue
+                && c.Latest.BtmsTimestamp.Value > c.Latest.AlvsTimestamp.Value
+            select c;
+
+        var countWhereBtmsRespondedFirstQuery =
+            from c in query
+            where
+                c.Latest.DecisionNumberMatched == DecisionNumberMatch.ExactMatch
+                && c.Latest.BtmsTimestamp.HasValue
+                && c.Latest.AlvsTimestamp.HasValue
+                && c.Latest.BtmsTimestamp.Value <= c.Latest.AlvsTimestamp.Value
+            select c;
+
         var misMatchDecisionNumberQuery =
             from c in query
             where c.Latest.DecisionNumberMatched == DecisionNumberMatch.Mismatch
@@ -61,7 +79,11 @@ public class ParityService(IDbContext dbContext) : IParityService
 
         var decisionNumberStats = new Dictionary<string, int>(
             decisionNumberCountQueryResults.Select(x => new KeyValuePair<string, int>(x.Key, x.Count))
-        );
+        )
+        {
+            ["countWhereAlvsRespondedFirst"] = await countWhereAlvsRespondedFirstQuery.CountAsync(cancellationToken),
+            ["countWhereBtmsRespondedFirst"] = await countWhereBtmsRespondedFirstQuery.CountAsync(cancellationToken),
+        };
 
         return new ParityProjection(
             stats,

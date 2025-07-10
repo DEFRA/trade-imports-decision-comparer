@@ -150,9 +150,12 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
         await DrainAllMessages();
         var client = CreateClient();
         var start = DateTime.UtcNow;
-        await InsertDecisionsForMrn("parity-mrn1", Decision1, Decision1);
-        await InsertDecisionsForMrn("parity-mrn2", Decision2, Decision3);
-        await InsertDecisionsForMrn("parity-mrn3", Decision2, Decision1);
+
+        var mismatchMrn = Guid.NewGuid().ToString("N");
+
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), Decision1, Decision1);
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), Decision2, Decision3);
+        await InsertDecisionsForMrn(mismatchMrn, Decision2, Decision1);
 
         var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(start, null));
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -162,7 +165,7 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
             JsonSerializer.Deserialize<ParityProjection>(content, s_options)
             ?? throw new Exception("Failed to deserialize");
         result.MisMatchMrns.Count.Should().Be(1);
-        result.MisMatchMrns[0].Should().Be("parity-mrn3");
+        result.MisMatchMrns[0].Should().Be(mismatchMrn);
         result.ParityStats.Count.Should().Be(3);
         result.ParityStats["ExactMatch"].Should().Be(1);
         result.ParityStats["Mismatch"].Should().Be(1);
@@ -176,11 +179,13 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
         var client = CreateClient();
         var start = DateTime.UtcNow;
 
-        await InsertDecisionsForMrn("parity-mrn4", Decision1, Decision1, false);
-        await InsertDecisionsForMrn("parity-mrn5", Decision2, Decision3, false);
-        await InsertDecisionsForMrn("parity-mrn6", Decision1, Decision1, false);
-        await InsertDecisionsForMrn("parity-mrn7", Decision2, Decision1, false);
-        await InsertDecisionsForMrn("parity-mrn8", Decision2, Decision1);
+        var mismatchMrn = Guid.NewGuid().ToString("N");
+
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), Decision1, Decision1, false);
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), Decision2, Decision3, false);
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), Decision1, Decision1, false);
+        await InsertDecisionsForMrn(mismatchMrn, Decision2, Decision1, false);
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), Decision2, Decision1);
 
         var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(start, null, false));
         var content = await response.Content.ReadAsStringAsync();
@@ -189,7 +194,7 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
             ?? throw new Exception("Failed to deserialize");
 
         result.MisMatchMrns.Count.Should().Be(1);
-        result.MisMatchMrns[0].Should().Be("parity-mrn7");
+        result.MisMatchMrns[0].Should().Be(mismatchMrn);
         result.ParityStats.Count.Should().Be(3);
         result.ParityStats["ExactMatch"].Should().Be(2);
         result.ParityStats["Mismatch"].Should().Be(1);
@@ -208,8 +213,10 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
             "<DecisionNumber>2</DecisionNumber>"
         );
 
-        await InsertDecisionsForMrn("parity-mrn1", Decision1, nonMatchingDecision1, false);
-        await InsertDecisionsForMrn("parity-mrn2", Decision1, Decision1, false);
+        var mrn1 = Guid.NewGuid().ToString("N");
+
+        await InsertDecisionsForMrn(mrn1, Decision1, nonMatchingDecision1, false);
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), Decision1, Decision1, false);
 
         var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(start, null, false));
         var content = await response.Content.ReadAsStringAsync();
@@ -219,7 +226,33 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
 
         result.DecisionNumberStats["Mismatch"].Should().Be(1);
         result.DecisionNumberStats["ExactMatch"].Should().Be(1);
-        result.MisMatchDecisionNumberMrns[0].Should().Be("parity-mrn1");
+        result.MisMatchDecisionNumberMrns[0].Should().Be(mrn1);
+    }
+
+    [Fact]
+    public async Task WhenParityExists_AndWhenDecisionNumberParityExists_TheReceivedOrderIsIncluded()
+    {
+        await DrainAllMessages();
+        var client = CreateClient();
+        var start = DateTime.UtcNow;
+
+        var decision1Earlier = Decision1.Replace(
+            "<ServiceCallTimestamp>2023-06-30T07:34:14.405827</ServiceCallTimestamp>",
+            "<ServiceCallTimestamp>2023-06-29T07:34:14.405827</ServiceCallTimestamp>"
+        );
+
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), Decision1, decision1Earlier, false);
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), Decision1, decision1Earlier, false);
+        await InsertDecisionsForMrn(Guid.NewGuid().ToString("N"), decision1Earlier, Decision1, false);
+
+        var response = await client.GetAsync(Testing.Endpoints.Decisions.Parity(start, null, false));
+        var content = await response.Content.ReadAsStringAsync();
+        var result =
+            JsonSerializer.Deserialize<ParityProjection>(content, s_options)
+            ?? throw new Exception("Failed to deserialize");
+
+        result.DecisionNumberStats["countWhereBtmsRespondedFirst"].Should().Be(2);
+        result.DecisionNumberStats["countWhereAlvsRespondedFirst"].Should().Be(1);
     }
 
     private async Task InsertDecisionsForMrn(

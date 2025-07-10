@@ -36,9 +36,9 @@ public record Header(
 
         var entryVersionNumber = TryParse(
             xmlElement.GetValueOrDefault(nameof(ElementNames.EntryVersionNumber), ""),
-            out var entryVersionNumbeParsed
+            out var entryVersionNumberParsed
         )
-            ? entryVersionNumbeParsed
+            ? entryVersionNumberParsed
             : (int?)null;
 
         return new Header(decisionNumber, entryVersionNumber);
