@@ -50,7 +50,12 @@ public class ParityTests(ComparerWebApplicationFactory factory, ITestOutputHelpe
             .Returns(
                 new ParityProjection(
                     new Dictionary<string, int> { { nameof(ComparisionOutcome.Mismatch), 3 } },
-                    new Dictionary<string, int> { { nameof(DecisionNumberMatch.Mismatch), 3 } },
+                    new Dictionary<string, int>
+                    {
+                        { nameof(DecisionNumberMatch.Mismatch), 3 },
+                        { "countWhereAlvsRespondedFirst", 1 },
+                        { "countWhereBtmsRespondedFirst", 2 },
+                    },
                     [Mrn],
                     [Mrn]
                 )
