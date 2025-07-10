@@ -71,7 +71,7 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        await MockComparisonManager.Received().CreateUpdateComparisonEntity(Mrn, null, Arg.Any<CancellationToken>());
+        await MockComparisonManager.Received().CompareLatestDecisions(Mrn, null, Arg.Any<CancellationToken>());
     }
 
     [Fact]

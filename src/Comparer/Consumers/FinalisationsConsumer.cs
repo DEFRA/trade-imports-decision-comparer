@@ -20,7 +20,7 @@ public class FinalisationsConsumer(IComparisonManager comparisonManager, ILogger
         logger.LogInformation("Received finalisation for {ResourceId}", message.ResourceId);
 
         var finalisation = message.Resource?.Finalisation;
-        await comparisonManager.CreateUpdateComparisonEntity(message.ResourceId, finalisation, cancellationToken);
+        await comparisonManager.CompareLatestDecisions(message.ResourceId, finalisation, cancellationToken);
     }
 
     public required IConsumerContext Context { get; set; }
