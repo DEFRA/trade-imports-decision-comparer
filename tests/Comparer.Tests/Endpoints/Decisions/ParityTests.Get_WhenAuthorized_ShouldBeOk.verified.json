@@ -3,7 +3,9 @@
     "Mismatch": 3
   },
   "decisionNumberStats": {
-    "Mismatch": 3
+    "Mismatch": 3,
+    "countWhereAlvsRespondedFirst": 1,
+    "countWhereBtmsRespondedFirst": 2
   },
   "misMatchMrns": [
     "mrn"
