@@ -50,10 +50,12 @@ public class ParityTests(ComparerWebApplicationFactory factory, ITestOutputHelpe
             .Returns(
                 new OutboundErrorParityProjection(
                     new Dictionary<string, int> { { nameof(OutboundErrorComparisonOutcome.Mismatch), 3 } },
-                    [Mrn],
-                    [Mrn],
-                    [Mrn],
-                    [Mrn]
+                    NoAlvsErrorsMrns: [Mrn],
+                    NoBtmsErrorsMrns: [Mrn],
+                    AlvsOnlyMrns: [Mrn],
+                    BtmsOnlyMrns: [Mrn],
+                    MismatchMrns: [Mrn],
+                    HeaderMismatchMrns: [Mrn]
                 )
             );
 
