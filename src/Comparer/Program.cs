@@ -136,10 +136,10 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
                 }
 
                 var btmsOptions = context.RequestServices.GetRequiredService<IOptions<BtmsOptions>>().Value;
-                if (btmsOptions.ConnectedSilentRunning && error is not null)
+                if (btmsOptions.ConnectedSilentRunning && exceptionHandlerFeature is not null && error is not null)
                 {
                     var httpMethodMetadata =
-                        exceptionHandlerFeature?.Endpoint?.Metadata.GetMetadata<HttpMethodMetadata>();
+                        exceptionHandlerFeature.Endpoint?.Metadata.GetMetadata<HttpMethodMetadata>();
                     if (httpMethodMetadata != null && httpMethodMetadata.HttpMethods.Contains("PUT"))
                     {
                         var logger = context
@@ -149,7 +149,7 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
                         logger.LogWarning(
                             error,
                             "Exception from endpoint {Endpoint} during connected silent running",
-                            exceptionHandlerFeature?.Endpoint?.DisplayName
+                            exceptionHandlerFeature.Endpoint?.DisplayName
                         );
 
                         context.Response.StatusCode = StatusCodes.Status200OK;
