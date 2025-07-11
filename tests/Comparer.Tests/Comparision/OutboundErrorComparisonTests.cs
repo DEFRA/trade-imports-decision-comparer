@@ -49,6 +49,16 @@ public class OutboundErrorComparisonTests
     }
 
     [Fact]
+    public void WhenLegacyErrorCode_AndNoBtmsErrors_ShouldBeMatch()
+    {
+        var alvsXml = SampleOutboundError.WithErrorCode(LegacyErrorCode1);
+
+        var comparison = OutboundErrorComparison.Create(alvsXml, null);
+
+        comparison.Match.Should().Be(OutboundErrorComparisonOutcome.LegacyAlvsErrorCode);
+    }
+
+    [Fact]
     public void WhenActiveErrorCode_ShouldBeMatch()
     {
         var alvsXml = SampleOutboundError.WithErrorCode(ActiveErrorCode1);

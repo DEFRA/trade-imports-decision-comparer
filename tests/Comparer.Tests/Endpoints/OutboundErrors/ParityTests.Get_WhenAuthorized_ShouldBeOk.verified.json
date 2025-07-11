@@ -2,6 +2,12 @@
   "stats": {
     "Mismatch": 3
   },
+  "noAlvsErrorsMrns": [
+    "mrn"
+  ],
+  "noBtmsErrorsMrns": [
+    "mrn"
+  ],
   "alvsOnlyMrns": [
     "mrn"
   ],
