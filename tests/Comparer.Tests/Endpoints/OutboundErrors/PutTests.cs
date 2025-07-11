@@ -69,6 +69,22 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     }
 
     [Fact]
+    public async Task PutAlvs_WhenComparisonManagerThrows_AndConnectedSilentRunning_ShouldBeOk()
+    {
+        var client = CreateClient();
+        MockComparisonManager
+            .CompareLatestOutboundErrors(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Throws(new Exception("Unhandled"));
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.OutboundErrors.Alvs.Put(Mrn),
+            new StringContent("<xml alvs=\"true\" />")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
     public async Task PutAlvs_WhenConcurrencyException_ShouldBeConflict()
     {
         var client = CreateClient();
@@ -126,6 +142,22 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
         await Verify(content);
 
         await MockComparisonManager.Received().CompareLatestOutboundErrors(Mrn, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task PutBtms_WhenComparisonManagerThrows_AndConnectedSilentRunning_ShouldBeOk()
+    {
+        var client = CreateClient();
+        MockComparisonManager
+            .CompareLatestOutboundErrors(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Throws(new Exception("Unhandled"));
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.OutboundErrors.Btms.Put(Mrn),
+            new StringContent("<xml alvs=\"true\" />")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
