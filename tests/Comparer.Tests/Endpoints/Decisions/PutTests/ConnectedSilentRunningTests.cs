@@ -83,7 +83,7 @@ public class ConnectedSilentRunningTests(ComparerWebApplicationFactory factory, 
     {
         var client = CreateClient();
         MockComparisonManager
-            .CompareLatestOutboundErrors(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .CompareLatestDecisions(Arg.Any<string>(), null, Arg.Any<CancellationToken>())
             .Throws(new Exception("Unhandled"));
 
         var response = await client.PutAsync(
