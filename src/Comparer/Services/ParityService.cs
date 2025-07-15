@@ -116,6 +116,16 @@ public class ParityService(IDbContext dbContext) : IParityService
             group c by c.Latest.Match.ToString() into grp
             select new { grp.Key, Count = grp.Count() };
 
+        var noAlvsErrorsMrnQuery =
+            from c in query
+            where c.Latest.Match == OutboundErrorComparisonOutcome.NoAlvsErrors
+            select c.Id;
+
+        var noBtmsErrorsMrnQuery =
+            from c in query
+            where c.Latest.Match == OutboundErrorComparisonOutcome.NoBtmsErrors
+            select c.Id;
+
         var alvsOnlyMrnQuery =
             from c in query
             where c.Latest.Match == OutboundErrorComparisonOutcome.AlvsOnlyError
@@ -143,6 +153,8 @@ public class ParityService(IDbContext dbContext) : IParityService
                     x.Count
                 ))
             ),
+            await noAlvsErrorsMrnQuery.ToListAsync(cancellationToken),
+            await noBtmsErrorsMrnQuery.ToListAsync(cancellationToken),
             await alvsOnlyMrnQuery.ToListAsync(cancellationToken),
             await btmsOnlyMrnQuery.ToListAsync(cancellationToken),
             await mismatchMrnQuery.ToListAsync(cancellationToken),

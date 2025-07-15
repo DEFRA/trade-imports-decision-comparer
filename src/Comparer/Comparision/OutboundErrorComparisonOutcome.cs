@@ -61,14 +61,14 @@ public static class OutboundErrorComparisionOutcomeEvaluator
             return OutboundErrorComparisonOutcome.NoAlvsErrors;
         }
 
-        if (context.BtmsErrors.Count == 0)
-        {
-            return OutboundErrorComparisonOutcome.NoBtmsErrors;
-        }
-
         if (context.AlvsErrors.All(x => x.ErrorCode is not null && s_legacyAlvsErrorCodes.Contains(x.ErrorCode)))
         {
             return OutboundErrorComparisonOutcome.LegacyAlvsErrorCode;
+        }
+
+        if (context.BtmsErrors.Count == 0)
+        {
+            return OutboundErrorComparisonOutcome.NoBtmsErrors;
         }
 
         if (
