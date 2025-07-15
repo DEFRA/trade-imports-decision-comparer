@@ -46,7 +46,7 @@ services:
       Acl__Clients__IntegrationTests__Secret: integration-tests-pwd
       Acl__Clients__IntegrationTests__Scopes__0: read
       Acl__Clients__IntegrationTests__Scopes__1: write
-      Btms__ConnectedSilentRunning: false
+      Btms__OperatingMode: 0
     ports:
       - "8080:8080"
     healthcheck:
