@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Defra.TradeImportsDecisionComparer.Comparer.Authentication;
+using Defra.TradeImportsDecisionComparer.Comparer.Configuration;
 using Defra.TradeImportsDecisionComparer.Comparer.Data.Extensions;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.Decisions;
 using Defra.TradeImportsDecisionComparer.Comparer.Endpoints.OutboundErrors;
@@ -12,6 +13,7 @@ using Defra.TradeImportsDecisionComparer.Comparer.Utils.Logging;
 using Elastic.CommonSchema.Serilog;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Http.Resilience;
+using Microsoft.Extensions.Options;
 using Polly;
 using Serilog;
 
@@ -85,6 +87,7 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
             }
         );
     });
+    builder.Services.AddOptions<BtmsOptions>().BindConfiguration("Btms").ValidateOptions();
     builder.Services.AddProblemDetails();
     builder.Services.AddHealthChecks();
     builder.Services.AddHealth(builder.Configuration);
@@ -130,6 +133,27 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
                 {
                     context.Response.StatusCode = badHttpRequestException.StatusCode;
                     detail = badHttpRequestException.Message;
+                }
+
+                var btmsOptions = context.RequestServices.GetRequiredService<IOptions<BtmsOptions>>().Value;
+                if (btmsOptions.ConnectedSilentRunning && exceptionHandlerFeature is not null && error is not null)
+                {
+                    var httpMethodMetadata =
+                        exceptionHandlerFeature.Endpoint?.Metadata.GetMetadata<HttpMethodMetadata>();
+                    if (httpMethodMetadata != null && httpMethodMetadata.HttpMethods.Contains("PUT"))
+                    {
+                        var logger = context
+                            .RequestServices.GetRequiredService<ILoggerFactory>()
+                            .CreateLogger("ExceptionHandler");
+
+                        logger.LogWarning(
+                            error,
+                            "Exception from endpoint {Endpoint} during connected silent running",
+                            exceptionHandlerFeature.Endpoint?.DisplayName
+                        );
+
+                        context.Response.StatusCode = StatusCodes.Status200OK;
+                    }
                 }
 
                 await context
