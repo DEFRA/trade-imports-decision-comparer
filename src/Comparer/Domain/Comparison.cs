@@ -16,6 +16,9 @@ public record Comparison(
     [property: JsonPropertyName("reasons")] string[]? Reasons
 )
 {
+    public static Comparison Empty =>
+        new(DateTime.MinValue, null, null, ComparisionOutcome.Mismatch, null, null, null, null, null);
+
     public static Comparison Create(string? alvsXml, string? btmsXml, Finalisation? finalisation)
     {
         var alvsItems = Item.FromXml(alvsXml);

@@ -28,4 +28,7 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Comparer\Comparer.csproj" />
+  </ItemGroup>
 </Project>

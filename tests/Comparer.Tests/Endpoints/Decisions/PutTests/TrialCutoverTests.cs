@@ -1,7 +1,10 @@
 using System.Net;
+using Defra.TradeImportsDecisionComparer.Comparer.Comparision;
 using Defra.TradeImportsDecisionComparer.Comparer.Configuration;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
+using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
+using Defra.TradeImportsDecisionComparer.Testing.Fixtures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -48,6 +51,25 @@ public class TrialCutoverTests(ComparerWebApplicationFactory factory, ITestOutpu
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+    }
+
+    [Fact]
+    public async Task PutAlvs_WhenValidComparison_ShouldBeBtmsDecision()
+    {
+        var client = CreateClient();
+        MockComparisonManager
+            .CompareLatestDecisions(Mrn, null, Arg.Any<CancellationToken>())
+            .Returns(new ComparisonEntity { Id = Mrn, Latest = ComparisonFixtures.MatchComparison() });
+
+        var response = await client.PutAsync(
+            Testing.Endpoints.Decisions.Alvs.Put(Mrn),
+            new StringContent("<xml alvs=\"true\" />")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+
+        await Verify(content);
     }
 
     [Fact]

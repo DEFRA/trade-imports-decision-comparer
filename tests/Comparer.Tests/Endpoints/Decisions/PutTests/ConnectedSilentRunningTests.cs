@@ -1,6 +1,7 @@
 using System.Net;
 using Defra.TradeImportsDecisionComparer.Comparer.Data;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
+using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -48,6 +49,9 @@ public class ConnectedSilentRunningTests(ComparerWebApplicationFactory factory, 
     public async Task PutAlvs_WhenValid_ShouldBeRequestBodyAsResponse()
     {
         var client = CreateClient();
+        MockComparisonManager
+            .CompareLatestDecisions(Mrn, null, Arg.Any<CancellationToken>())
+            .Returns(new ComparisonEntity { Id = Mrn, Latest = Comparison.Empty });
 
         var response = await client.PutAsync(
             Testing.Endpoints.Decisions.Alvs.Put(Mrn),

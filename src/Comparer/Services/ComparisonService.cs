@@ -13,7 +13,7 @@ public class ComparisonService(IDbContext dbContext) : IComparisonService
     public Task<OutboundErrorComparisonEntity?> GetOutboundError(string mrn, CancellationToken cancellationToken) =>
         dbContext.OutboundErrorComparisons.Find(mrn, cancellationToken);
 
-    public async Task Save(ComparisonEntity comparison, CancellationToken cancellationToken)
+    public async Task<ComparisonEntity> Save(ComparisonEntity comparison, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(comparison.ETag))
             await dbContext.Comparisons.Insert(comparison, cancellationToken);
@@ -21,6 +21,8 @@ public class ComparisonService(IDbContext dbContext) : IComparisonService
             await dbContext.Comparisons.Update(comparison, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        return comparison;
     }
 
     public async Task Save(OutboundErrorComparisonEntity comparison, CancellationToken cancellationToken)
