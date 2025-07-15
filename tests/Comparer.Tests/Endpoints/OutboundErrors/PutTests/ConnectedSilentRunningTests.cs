@@ -7,9 +7,9 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit.Abstractions;
 
-namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.OutboundErrors;
+namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.OutboundErrors.PutTests;
 
-public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
+public class ConnectedSilentRunningTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : EndpointTestBase(factory, outputHelper)
 {
     private const string Mrn = "mrn";
