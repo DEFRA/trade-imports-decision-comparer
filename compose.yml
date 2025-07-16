@@ -39,18 +39,49 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ENVIRONMENT: local
-      PORT: 8080
       Mongo__DatabaseUri: mongodb://mongodb:27017/?directConnection=true
       SQS_ENDPOINT: http://localstack:4566
       AWS_EMF_ENVIRONMENT: Local
       Acl__Clients__IntegrationTests__Secret: integration-tests-pwd
       Acl__Clients__IntegrationTests__Scopes__0: read
       Acl__Clients__IntegrationTests__Scopes__1: write
-      Btms__ConnectedSilentRunning: false
+      Btms__OperatingMode: 1 # ConnectedSilentRunning
     ports:
       - "8080:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/all"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+      
+  comparer-trialcutover:
+    build:
+      args:
+        DEFRA_NUGET_PAT: ${DEFRA_NUGET_PAT}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    env_file:
+      - 'compose/aws.env'
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ENVIRONMENT: local
+      ASPNETCORE_URLS: http://+:8081
+      Mongo__DatabaseUri: mongodb://mongodb:27017/?directConnection=true
+      SQS_ENDPOINT: http://localstack:4566
+      AWS_EMF_ENVIRONMENT: Local
+      Acl__Clients__IntegrationTests__Secret: integration-tests-pwd
+      Acl__Clients__IntegrationTests__Scopes__0: read
+      Acl__Clients__IntegrationTests__Scopes__1: write
+      Btms__OperatingMode: 2 # TrialCutover
+      FinalisationsConsumer__QueueName: trade_imports_data_upserted_decision_comparer_trialcutover
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/health/all" ]
       interval: 5s
       timeout: 5s
       retries: 10

@@ -1,15 +1,16 @@
 using System.Net;
 using Defra.TradeImportsDecisionComparer.Comparer.Data;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
+using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 using Defra.TradeImportsDecisionComparer.Comparer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit.Abstractions;
 
-namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.Decisions;
+namespace Defra.TradeImportsDecisionComparer.Comparer.Tests.Endpoints.Decisions.PutTests;
 
-public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
+public class ConnectedSilentRunningTests(ComparerWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : EndpointTestBase(factory, outputHelper)
 {
     private const string Mrn = "mrn";
@@ -48,6 +49,9 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     public async Task PutAlvs_WhenValid_ShouldBeRequestBodyAsResponse()
     {
         var client = CreateClient();
+        MockComparisonManager
+            .CompareLatestDecisions(Mrn, null, Arg.Any<CancellationToken>())
+            .Returns(new ComparisonEntity { Id = Mrn, Latest = Comparison.Empty });
 
         var response = await client.PutAsync(
             Testing.Endpoints.Decisions.Alvs.Put(Mrn),
@@ -79,7 +83,7 @@ public class PutTests(ComparerWebApplicationFactory factory, ITestOutputHelper o
     {
         var client = CreateClient();
         MockComparisonManager
-            .CompareLatestOutboundErrors(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .CompareLatestDecisions(Arg.Any<string>(), null, Arg.Any<CancellationToken>())
             .Throws(new Exception("Unhandled"));
 
         var response = await client.PutAsync(

@@ -25,6 +25,7 @@ public static class EndpointRouteBuilderExtensions
         HttpContext context,
         [FromServices] IDecisionService decisionService,
         [FromServices] IComparisonManager comparisonManager,
+        [FromServices] IOperatingModeStrategy operatingModeStrategy,
         CancellationToken cancellationToken
     ) =>
         await ReadAndSave(
@@ -32,7 +33,10 @@ public static class EndpointRouteBuilderExtensions
             async (decision, ct) =>
             {
                 await decisionService.AppendAlvsDecision(mrn, decision, ct);
-                await comparisonManager.CompareLatestDecisions(mrn, null, ct);
+
+                var comparison = await comparisonManager.CompareLatestDecisions(mrn, null, ct);
+
+                return operatingModeStrategy.DetermineDecision(comparison, decision);
             },
             cancellationToken
         );
@@ -43,7 +47,17 @@ public static class EndpointRouteBuilderExtensions
         HttpContext context,
         [FromServices] IDecisionService decisionService,
         CancellationToken cancellationToken
-    ) => await ReadAndSave(context, (d, ct) => decisionService.AppendBtmsDecision(mrn, d, ct), cancellationToken);
+    ) =>
+        await ReadAndSave(
+            context,
+            async (decision, ct) =>
+            {
+                await decisionService.AppendBtmsDecision(mrn, decision, ct);
+
+                return decision.Xml;
+            },
+            cancellationToken
+        );
 
     [HttpGet]
     private static async Task<IResult> Get(
@@ -87,24 +101,25 @@ public static class EndpointRouteBuilderExtensions
     [SuppressMessage("SonarLint", "S5131", Justification = "This service cannot be compromised by a malicious user")]
     private static async Task<IResult> ReadAndSave(
         HttpContext context,
-        Func<Decision, CancellationToken, Task> save,
+        Func<Decision, CancellationToken, Task<string?>> save,
         CancellationToken cancellationToken
     )
     {
         context.Request.EnableBuffering();
 
         using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
-        var xml = await reader.ReadToEndAsync(cancellationToken);
+        var incomingDecision = await reader.ReadToEndAsync(cancellationToken);
+        string? outgoingDecision;
 
         try
         {
-            await save(new Decision(DateTime.UtcNow, xml), cancellationToken);
+            outgoingDecision = await save(new Decision(DateTime.UtcNow, incomingDecision), cancellationToken);
         }
         catch (ConcurrencyException)
         {
             return Results.Conflict();
         }
 
-        return Results.Content(xml, "application/xml", Encoding.UTF8);
+        return Results.Content(outgoingDecision ?? incomingDecision, "application/xml", Encoding.UTF8);
     }
 }

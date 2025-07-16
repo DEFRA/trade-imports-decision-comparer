@@ -101,6 +101,17 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
     builder.Services.AddTransient<IDecisionService, DecisionService>();
     builder.Services.AddTransient<IComparisonService, ComparisonService>();
     builder.Services.AddTransient<IComparisonManager, ComparisonManager>();
+    builder.Services.AddTransient<ConnectedSilentRunningOperatingModeStrategy>();
+    builder.Services.AddTransient<TrialCutoverOperatingModeStrategy>();
+    builder.Services.AddTransient<IOperatingModeStrategy>(sp =>
+        sp.GetRequiredService<IOptions<BtmsOptions>>().Value.OperatingMode switch
+        {
+            OperatingMode.ConnectedSilentRunning =>
+                sp.GetRequiredService<ConnectedSilentRunningOperatingModeStrategy>(),
+            OperatingMode.TrialCutover => sp.GetRequiredService<TrialCutoverOperatingModeStrategy>(),
+            _ => new DefaultOperatingModeStrategy(),
+        }
+    );
 
     builder.Services.AddTransient<MetricsMiddleware>();
     builder.Services.AddSingleton<RequestMetrics>();
@@ -136,7 +147,11 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
                 }
 
                 var btmsOptions = context.RequestServices.GetRequiredService<IOptions<BtmsOptions>>().Value;
-                if (btmsOptions.ConnectedSilentRunning && exceptionHandlerFeature is not null && error is not null)
+                if (
+                    btmsOptions.OperatingMode == OperatingMode.ConnectedSilentRunning
+                    && exceptionHandlerFeature is not null
+                    && error is not null
+                )
                 {
                     var httpMethodMetadata =
                         exceptionHandlerFeature.Endpoint?.Metadata.GetMetadata<HttpMethodMetadata>();
