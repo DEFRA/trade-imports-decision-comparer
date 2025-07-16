@@ -13,7 +13,6 @@
         "AWS_SECRET_ACCESS_KEY": "test",
         "ENVIRONMENT": "local",
         "SQS_ENDPOINT": "http://localhost:4566",
-
         "Acl__Clients__IntegrationTests__Secret": "integration-tests-pwd",
         "Acl__Clients__IntegrationTests__Scopes__0": "read",
         "Acl__Clients__IntegrationTests__Scopes__1": "write"
