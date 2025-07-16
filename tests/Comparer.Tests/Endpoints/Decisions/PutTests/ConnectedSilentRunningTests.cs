@@ -68,6 +68,9 @@ public class ConnectedSilentRunningTests(ComparerWebApplicationFactory factory, 
     public async Task PutAlvs_WhenValid_ShouldTriggerAComparison()
     {
         var client = CreateClient();
+        MockComparisonManager
+            .CompareLatestDecisions(Mrn, null, Arg.Any<CancellationToken>())
+            .Returns(new ComparisonEntity { Id = Mrn, Latest = Comparison.Empty });
 
         var response = await client.PutAsync(
             Testing.Endpoints.Decisions.Alvs.Put(Mrn),
