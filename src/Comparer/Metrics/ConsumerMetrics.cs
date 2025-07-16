@@ -64,6 +64,7 @@ public class ConsumerMetrics
         var tagList = BuildTags(queueName, consumerName, resourceType, subResourceType);
 
         tagList.Add(Constants.Tags.ExceptionType, exception.GetType().Name);
+
         _consumeFaultTotal.Add(1, tagList);
     }
 
@@ -78,6 +79,7 @@ public class ConsumerMetrics
         var tagList = BuildTags(queueName, consumerName, resourceType, subResourceType);
 
         tagList.Add(Constants.Tags.ExceptionType, exception.GetType().Name);
+
         _consumeWarnTotal.Add(1, tagList);
     }
 

@@ -112,6 +112,7 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
             _ => new DefaultOperatingModeStrategy(),
         }
     );
+    builder.Services.AddSingleton<IComparisonMetrics, ComparisonMetrics>();
 
     builder.Services.AddTransient<MetricsMiddleware>();
     builder.Services.AddSingleton<RequestMetrics>();
