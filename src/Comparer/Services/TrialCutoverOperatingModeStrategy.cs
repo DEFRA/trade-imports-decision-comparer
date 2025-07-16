@@ -1,11 +1,14 @@
 using Defra.TradeImportsDecisionComparer.Comparer.Comparision;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 using Defra.TradeImportsDecisionComparer.Comparer.Entities;
+using Defra.TradeImportsDecisionComparer.Comparer.Metrics;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Services;
 
-public class TrialCutoverOperatingModeStrategy(ILogger<TrialCutoverOperatingModeStrategy> logger)
-    : IOperatingModeStrategy
+public class TrialCutoverOperatingModeStrategy(
+    ILogger<TrialCutoverOperatingModeStrategy> logger,
+    IComparisonMetrics comparisonMetrics
+) : IOperatingModeStrategy
 {
     public string DetermineDecision(ComparisonEntity comparison, Decision incomingDecision)
     {
@@ -29,6 +32,8 @@ public class TrialCutoverOperatingModeStrategy(ILogger<TrialCutoverOperatingMode
             comparison.Latest.Created
         );
 
+        comparisonMetrics.BtmsDecision();
+
         return comparison.Latest.BtmsXml!;
     }
 
@@ -39,6 +44,8 @@ public class TrialCutoverOperatingModeStrategy(ILogger<TrialCutoverOperatingMode
             comparison.Id,
             comparison.Latest.Created
         );
+
+        comparisonMetrics.AlvsDecision();
 
         return incomingDecision.Xml;
     }
