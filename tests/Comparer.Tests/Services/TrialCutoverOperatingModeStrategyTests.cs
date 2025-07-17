@@ -46,7 +46,7 @@ public class TrialCutoverOperatingModeStrategyTests
         );
 
         result.Should().Be(incomingDecision.Xml);
-        AssertMetrics(alvsDecision: true);
+        AssertMetrics(alvsDecision: true, sampled: false);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class TrialCutoverOperatingModeStrategyTests
         );
 
         result.Should().Be(incomingDecision.Xml);
-        AssertMetrics(alvsDecision: true);
+        AssertMetrics(alvsDecision: true, sampled: false);
     }
 
     [Theory]
@@ -83,7 +83,7 @@ public class TrialCutoverOperatingModeStrategyTests
         );
 
         result.Should().Be(incomingDecision.Xml);
-        AssertMetrics(alvsDecision: true);
+        AssertMetrics(alvsDecision: true, sampled: false);
     }
 
     [Theory]
@@ -120,7 +120,7 @@ public class TrialCutoverOperatingModeStrategyTests
         }
     }
 
-    private void AssertMetrics(bool btmsDecision = false, bool alvsDecision = false)
+    private void AssertMetrics(bool btmsDecision = false, bool alvsDecision = false, bool sampled = true)
     {
         if (btmsDecision)
             MockComparisonMetrics.Received(1).BtmsDecision();
@@ -131,6 +131,15 @@ public class TrialCutoverOperatingModeStrategyTests
             MockComparisonMetrics.Received(1).AlvsDecision();
         else
             MockComparisonMetrics.DidNotReceive().AlvsDecision();
+
+        MockComparisonMetrics
+            .Received(1)
+            .Match(Arg.Any<bool>(), Arg.Any<ComparisionOutcome>(), Arg.Any<DecisionNumberMatch?>());
+
+        if (sampled)
+            MockComparisonMetrics.Received(1).Sampled(Arg.Any<bool>(), Arg.Any<int>());
+        else
+            MockComparisonMetrics.DidNotReceive().Sampled(Arg.Any<bool>(), Arg.Any<int>());
     }
 
     private TrialCutoverOperatingModeStrategy CreateSubject(BtmsOptions? btmsOptions = null)

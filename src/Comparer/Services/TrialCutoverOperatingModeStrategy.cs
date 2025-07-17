@@ -25,15 +25,27 @@ public class TrialCutoverOperatingModeStrategy(
         return UseIncomingDecision(comparison, incomingDecision);
     }
 
-    private bool IsSamplingReached() =>
-        btmsOptions.Value.DecisionSamplingPercentage > 0
-        && random.NextDouble() * 100 <= btmsOptions.Value.DecisionSamplingPercentage;
-
-    private static bool DecisionMatches(ComparisonEntity comparison)
+    private bool IsSamplingReached()
     {
-        return comparison.Latest
+        var result =
+            btmsOptions.Value.DecisionSamplingPercentage > 0
+            && random.NextDouble() * 100 <= btmsOptions.Value.DecisionSamplingPercentage;
+
+        comparisonMetrics.Sampled(result, btmsOptions.Value.DecisionSamplingPercentage);
+
+        return result;
+    }
+
+    private bool DecisionMatches(ComparisonEntity comparison)
+    {
+        var result =
+            comparison.Latest
                 is { Match: ComparisionOutcome.ExactMatch, DecisionNumberMatched: DecisionNumberMatch.ExactMatch }
             && !string.IsNullOrEmpty(comparison.Latest.BtmsXml);
+
+        comparisonMetrics.Match(result, comparison.Latest.Match, comparison.Latest.DecisionNumberMatched);
+
+        return result;
     }
 
     private string UseBtmsDecision(ComparisonEntity comparison)
