@@ -1,27 +1,39 @@
 using Defra.TradeImportsDecisionComparer.Comparer.Comparision;
+using Defra.TradeImportsDecisionComparer.Comparer.Configuration;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 using Defra.TradeImportsDecisionComparer.Comparer.Entities;
 using Defra.TradeImportsDecisionComparer.Comparer.Metrics;
+using Defra.TradeImportsDecisionComparer.Comparer.Utils;
+using Microsoft.Extensions.Options;
 
 namespace Defra.TradeImportsDecisionComparer.Comparer.Services;
 
 public class TrialCutoverOperatingModeStrategy(
     ILogger<TrialCutoverOperatingModeStrategy> logger,
-    IComparisonMetrics comparisonMetrics
+    IComparisonMetrics comparisonMetrics,
+    IOptions<BtmsOptions> btmsOptions,
+    IRandom random
 ) : IOperatingModeStrategy
 {
     public string DetermineDecision(ComparisonEntity comparison, Decision incomingDecision)
     {
-        if (
-            comparison.Latest
-                is { Match: ComparisionOutcome.ExactMatch, DecisionNumberMatched: DecisionNumberMatch.ExactMatch }
-            && !string.IsNullOrEmpty(comparison.Latest.BtmsXml)
-        )
+        if (DecisionMatches(comparison) && IsSamplingReached())
         {
             return UseBtmsDecision(comparison);
         }
 
         return UseIncomingDecision(comparison, incomingDecision);
+    }
+
+    private bool IsSamplingReached() =>
+        btmsOptions.Value.DecisionSamplingPercentage > 0
+        && random.NextDouble() * 100 <= btmsOptions.Value.DecisionSamplingPercentage;
+
+    private static bool DecisionMatches(ComparisonEntity comparison)
+    {
+        return comparison.Latest
+                is { Match: ComparisionOutcome.ExactMatch, DecisionNumberMatched: DecisionNumberMatch.ExactMatch }
+            && !string.IsNullOrEmpty(comparison.Latest.BtmsXml);
     }
 
     private string UseBtmsDecision(ComparisonEntity comparison)

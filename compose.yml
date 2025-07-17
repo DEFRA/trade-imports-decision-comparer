@@ -77,6 +77,7 @@ services:
       Acl__Clients__IntegrationTests__Scopes__0: read
       Acl__Clients__IntegrationTests__Scopes__1: write
       Btms__OperatingMode: 2 # TrialCutover
+      Btms__DecisionSamplingPercentage: 100
       FinalisationsConsumer__QueueName: trade_imports_data_upserted_decision_comparer_trialcutover
     ports:
       - "8081:8081"

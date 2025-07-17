@@ -87,7 +87,7 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
             }
         );
     });
-    builder.Services.AddOptions<BtmsOptions>().BindConfiguration("Btms").ValidateOptions();
+    builder.Services.AddOptions<BtmsOptions>().BindConfiguration(BtmsOptions.SectionName).ValidateOptions();
     builder.Services.AddProblemDetails();
     builder.Services.AddHealthChecks();
     builder.Services.AddHealth(builder.Configuration);
@@ -113,6 +113,7 @@ static void ConfigureWebApplication(WebApplicationBuilder builder, string[] args
         }
     );
     builder.Services.AddSingleton<IComparisonMetrics, ComparisonMetrics>();
+    builder.Services.AddSingleton<IRandom, RandomShared>();
 
     builder.Services.AddTransient<MetricsMiddleware>();
     builder.Services.AddSingleton<RequestMetrics>();

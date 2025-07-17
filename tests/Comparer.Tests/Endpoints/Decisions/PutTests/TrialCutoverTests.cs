@@ -1,5 +1,4 @@
 using System.Net;
-using Defra.TradeImportsDecisionComparer.Comparer.Comparision;
 using Defra.TradeImportsDecisionComparer.Comparer.Configuration;
 using Defra.TradeImportsDecisionComparer.Comparer.Domain;
 using Defra.TradeImportsDecisionComparer.Comparer.Entities;
@@ -33,7 +32,13 @@ public class TrialCutoverTests(ComparerWebApplicationFactory factory, ITestOutpu
         base.ConfigureHostConfiguration(config);
 
         config.AddInMemoryCollection(
-            new Dictionary<string, string?> { ["Btms:OperatingMode"] = ((int)OperatingMode.TrialCutover).ToString() }
+            new Dictionary<string, string?>
+            {
+                [$"{BtmsOptions.SectionName}:{nameof(BtmsOptions.OperatingMode)}"] = (
+                    (int)OperatingMode.TrialCutover
+                ).ToString(),
+                [$"{BtmsOptions.SectionName}:{nameof(BtmsOptions.DecisionSamplingPercentage)}"] = "100",
+            }
         );
     }
 
