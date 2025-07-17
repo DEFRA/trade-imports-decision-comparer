@@ -275,8 +275,7 @@ public class DecisionParityTests(ITestOutputHelper output) : SqsTestBase(output)
             new StringContent(btmsDecisionXml, Encoding.UTF8, "application/xml")
         );
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        Console.Write(alvsDecisionXml);
-        Console.Write(btmsDecisionXml);
+
         var message = new ResourceEvent<CustomsDeclaration>
         {
             ResourceId = mrn,
