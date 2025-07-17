@@ -14,6 +14,7 @@ public class ComparisonMetrics : IComparisonMetrics
     private readonly Counter<long> _alvsDecisions;
     private readonly Counter<long> _sampled;
     private readonly Gauge<int> _samplingPercentage;
+    private readonly Counter<long> _match;
 
     public ComparisonMetrics(IMeterFactory meterFactory)
     {
@@ -40,6 +41,7 @@ public class ComparisonMetrics : IComparisonMetrics
             nameof(Unit.NONE),
             description: "Current sampling percentage"
         );
+        _match = meter.CreateCounter<long>("ComparisonMatch", nameof(Unit.COUNT), description: "Matched decisions");
     }
 
     public void BtmsDecision()
@@ -67,6 +69,8 @@ public class ComparisonMetrics : IComparisonMetrics
 
         if (decisionNumberMatch is not null)
             tagList.Add(Constants.Tags.DecisionNumberMatch, decisionNumberMatch.ToString());
+
+        _match.Add(1, tagList);
     }
 
     public void Sampled(bool sampled, int percentage)
