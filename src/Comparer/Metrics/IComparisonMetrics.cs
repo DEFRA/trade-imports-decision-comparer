@@ -10,5 +10,7 @@ public interface IComparisonMetrics
 
     void Match(bool match, ComparisionOutcome comparisionOutcome, DecisionNumberMatch? decisionNumberMatch);
 
-    void Sampled(bool sampled, int percentage);
+    void Sampled(bool sampled);
+
+    void SamplePercentage(int percentage);
 }

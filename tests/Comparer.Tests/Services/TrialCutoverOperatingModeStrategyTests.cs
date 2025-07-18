@@ -137,9 +137,11 @@ public class TrialCutoverOperatingModeStrategyTests
             .Match(Arg.Any<bool>(), Arg.Any<ComparisionOutcome>(), Arg.Any<DecisionNumberMatch?>());
 
         if (sampled)
-            MockComparisonMetrics.Received(1).Sampled(Arg.Any<bool>(), Arg.Any<int>());
+            MockComparisonMetrics.Received(1).Sampled(Arg.Any<bool>());
         else
-            MockComparisonMetrics.DidNotReceive().Sampled(Arg.Any<bool>(), Arg.Any<int>());
+            MockComparisonMetrics.DidNotReceive().Sampled(Arg.Any<bool>());
+
+        MockComparisonMetrics.Received(1).SamplePercentage(Arg.Any<int>());
     }
 
     private TrialCutoverOperatingModeStrategy CreateSubject(BtmsOptions? btmsOptions = null)

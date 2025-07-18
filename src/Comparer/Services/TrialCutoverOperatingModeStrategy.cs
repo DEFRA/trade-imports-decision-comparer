@@ -17,6 +17,8 @@ public class TrialCutoverOperatingModeStrategy(
 {
     public string DetermineDecision(ComparisonEntity comparison, Decision incomingDecision)
     {
+        comparisonMetrics.SamplePercentage(btmsOptions.Value.DecisionSamplingPercentage);
+
         if (DecisionMatches(comparison) && IsSamplingReached())
         {
             return UseBtmsDecision(comparison);
@@ -31,7 +33,7 @@ public class TrialCutoverOperatingModeStrategy(
             btmsOptions.Value.DecisionSamplingPercentage > 0
             && random.NextDouble() * 100 <= btmsOptions.Value.DecisionSamplingPercentage;
 
-        comparisonMetrics.Sampled(result, btmsOptions.Value.DecisionSamplingPercentage);
+        comparisonMetrics.Sampled(result);
 
         return result;
     }
