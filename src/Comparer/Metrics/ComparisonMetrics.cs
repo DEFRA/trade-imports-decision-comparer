@@ -48,7 +48,8 @@ public class ComparisonMetrics : IComparisonMetrics
     {
         var tagList = BuildTags();
 
-        IncrementTotal(tagList);
+        AddDecision(tagList);
+
         _btmsDecisions.Add(1, tagList);
     }
 
@@ -56,7 +57,8 @@ public class ComparisonMetrics : IComparisonMetrics
     {
         var tagList = BuildTags();
 
-        IncrementTotal(tagList);
+        AddDecision(tagList);
+
         _alvsDecisions.Add(1, tagList);
     }
 
@@ -73,19 +75,20 @@ public class ComparisonMetrics : IComparisonMetrics
         _match.Add(1, tagList);
     }
 
-    public void Sampled(bool sampled, int percentage)
+    public void Sampled(bool sampled)
     {
         var tagList = BuildTags();
 
         tagList.Add(Constants.Tags.Sampled, sampled.ToString().ToLower());
 
         _sampled.Add(1, tagList);
-        _samplingPercentage.Record(percentage, tagList);
     }
+
+    public void SamplePercentage(int percentage) => _samplingPercentage.Record(percentage, BuildTags());
 
     private static TagList BuildTags() => new() { { Constants.Tags.Service, Process.GetCurrentProcess().ProcessName } };
 
-    private void IncrementTotal(TagList tagList) => _decisions.Add(1, tagList);
+    private void AddDecision(TagList tagList) => _decisions.Add(1, tagList);
 
     private static class Constants
     {
