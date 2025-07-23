@@ -150,7 +150,10 @@ static WebApplication BuildWebApplication(WebApplicationBuilder builder)
 
                 var btmsOptions = context.RequestServices.GetRequiredService<IOptions<BtmsOptions>>().Value;
                 if (
-                    btmsOptions.OperatingMode == OperatingMode.ConnectedSilentRunning
+                    (
+                        btmsOptions.OperatingMode == OperatingMode.ConnectedSilentRunning
+                        || btmsOptions is { OperatingMode: OperatingMode.TrialCutover, DecisionSamplingPercentage: 0 }
+                    )
                     && exceptionHandlerFeature is not null
                     && error is not null
                 )
