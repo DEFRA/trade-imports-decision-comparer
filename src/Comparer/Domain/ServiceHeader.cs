@@ -28,6 +28,10 @@ public record ServiceHeader([property: JsonPropertyName("serviceCallTimestamp")]
             return s_emptyServiceHeader;
         }
 
-        return new ServiceHeader(reader.ReadElementContentAsDateTime());
+        var potentialValue = reader.ReadElementContentAsString();
+
+        return long.TryParse(potentialValue, out var unixTimestamp)
+            ? new ServiceHeader(DateTimeOffset.FromUnixTimeMilliseconds(unixTimestamp).DateTime)
+            : new ServiceHeader(XmlConvert.ToDateTime(potentialValue, XmlDateTimeSerializationMode.RoundtripKind));
     }
 }
