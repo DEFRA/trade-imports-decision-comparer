@@ -41,7 +41,7 @@ public sealed class CdpCredentialsSqsClientProvider : ISqsClientProvider, IDispo
 
     #region ISqsClientProvider
 
-    public AmazonSQSClient Client { get; }
+    public IAmazonSQS Client { get; }
 
     public Task EnsureClientAuthenticated()
     {
