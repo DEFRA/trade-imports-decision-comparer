@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
                     mbb.WithProviderAmazonSQS(cfg =>
                     {
                         cfg.TopologyProvisioning.Enabled = false;
-                        cfg.ClientProviderFactory = _ => new CdpCredentialsSqsClientProvider(
+                        cfg.SqsClientProviderFactory = _ => new CdpCredentialsSqsClientProvider(
                             cfg.SqsClientConfig,
                             configuration
                         );
