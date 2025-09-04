@@ -20,12 +20,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="WireMock.Net.RestClient" Version="1.10.0" />
+    <PackageReference Include="WireMock.Net.RestClient" Version="1.12.0" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Verify.Xunit" Version="30.10.0" />
+    <PackageReference Include="WireMock.Net.FluentAssertions" Version="1.12.0" />
     <ProjectReference Include="..\Testing\Testing.csproj" />
   </ItemGroup>
 </Project>
